@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/head_toolbar"/>
+
+    <FrameLayout
+        android:id="@+id/fl_maincontent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </FrameLayout>
+
+    <include layout="@layout/grayline" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioGroup
+                android:paddingTop="14px"
+                android:paddingBottom="14px"
+                android:id="@+id/rg_mainradiogroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/white"
+                android:gravity="center_vertical">
+                <nuanliu.com.modao.widget.PicControllableRadioButton
+                    android:id="@+id/rb_1"
+                    style="@style/MyTabRadioButton"
+                    app:drawableTop="@drawable/selector_hometab_iv"
+                    app:drawableSize="50px"
+                    android:text="首页"/>
+                <nuanliu.com.modao.widget.PicControllableRadioButton
+                    android:id="@+id/rb_2"
+                    app:drawableTop="@drawable/selector_customertab_iv"
+                    app:drawableSize="50px"
+                    style="@style/MyTabRadioButton"
+                    android:text="客服"/>
+                <nuanliu.com.modao.widget.PicControllableRadioButton
+                    android:id="@+id/rb_3"
+                    app:drawableTop="@drawable/selector_minetab_iv"
+                    app:drawableSize="50px"
+                    style="@style/MyTabRadioButton"
+                    android:text="我的"/>
+
+            </RadioGroup>
+            <View
+                android:layout_centerHorizontal="true"
+                android:id="@+id/flag"
+                android:layout_width="1dp"
+                android:layout_height="1dp"/>
+            <!--<com.nuanliu.finme.widget.badgeview.BGABadgeView-->
+                <!--android:id="@+id/tv_alertnum"-->
+                <!--android:layout_toLeftOf="@id/flag"-->
+                <!--android:layout_marginRight="86px"-->
+                <!--android:layout_width="84px"-->
+                <!--android:layout_height="84px"-->
+                <!--android:textColor="@color/white"-->
+                <!--app:badge_dragable="true"-->
+                <!--app:badge_isResumeTravel="true"-->
+                <!--app:badge_padding="10px"-->
+                <!--app:badge_gravity="rightTop"/>-->
+        </RelativeLayout>
+
+    </FrameLayout>
+
+</LinearLayout>

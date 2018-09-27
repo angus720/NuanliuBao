@@ -1,0 +1,267 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.Manifest;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
+import android.os.Bundle;
+import android.os.Vibrator;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.global.App;
+import nuanliu.com.modao.utils.NFCUtil;
+import nuanliu.com.modao.widget.TouchLinearLayout;
+import nuanliu.com.modao.widget.TouchTextView;
+
+public class DeviceBindingActivity extends BaseActivity {
+
+    @BindView(R.id.ll_scan_finsh)
+    LinearLayout mLlScanFinsh;
+    @BindView(R.id.retry_scan)
+    TouchTextView mRetryScan;
+    @BindView(R.id.tll_scanfirst)
+    TouchLinearLayout mTllScanfirst;
+    @BindView(R.id.tv_communication)
+    TextView mTvDeviceType;
+    @BindView(R.id.tv_iccid)
+    TextView tvIccid;
+    @BindView(R.id.tv_deviceid)
+    TextView mTvDeviceid;
+
+    private final static int REQUEST_CODE = 99;
+    private final static int REQUEST_CODE_1 = 100;
+    private final static int REQUEST_CODE_2 = 101;
+    private final static int REQUEST_SETTING_WIFI = 102;
+
+    private String residentId;
+    private String mStrDeviceType = "";
+    private String mEui64;
+    private NfcAdapter mNfcAdapter;
+    private PendingIntent mPendingIntent;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PackageManager pm = getPackageManager();
+        boolean nfc = pm.hasSystemFeature(PackageManager.FEATURE_NFC);
+        if (!nfc) {
+            Toast.makeText(this, "此设备不支持NFC", Toast.LENGTH_SHORT).show();
+        }
+        initView();
+        initData();
+        checkPermission();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        //一旦截获NFC消息，就会通过PendingIntent调用窗口
+        mPendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()), 0);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_device_binding;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("设备绑定");
+    }
+
+    private void initData() {
+        if (null != getIntent()) {
+            residentId = getIntent().getStringExtra(Fields.RESIDENT_ID);
+        }
+    }
+
+    /**
+     * 获得焦点，按钮可以点击
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        //设置处理优于所有其他NFC的处理
+        if (mNfcAdapter != null)
+            mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+    }
+
+    /**
+     * 暂停Activity，界面获取焦点，按钮可以点击
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        //恢复默认状态
+        if (mNfcAdapter != null)
+            mNfcAdapter.disableForegroundDispatch(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @OnClick({R.id.tll_scanfirst, R.id.retry_scan})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tll_scanfirst:
+                startActivityForResult(new Intent(this, ScanActivity.class), REQUEST_CODE_1);
+                break;
+            case R.id.retry_scan:
+                startActivityForResult(new Intent(this, ScanActivity.class), REQUEST_CODE_2);
+                break;
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        //1.获取Tag对象
+//        Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        //2.获取Ndef的实例
+//        Ndef ndef = Ndef.get(detectedTag);
+        String readNfcTag = NFCUtil.readNfcTag(intent);
+
+        if (!readNfcTag.equals("")) {
+            mTllScanfirst.setVisibility(View.GONE);
+            mLlScanFinsh.setVisibility(View.VISIBLE);
+            mRetryScan.setVisibility(View.VISIBLE);
+        }
+
+        //读取nfc文本数据并处理
+//        dealwitStr(readNfcTag);
+    }
+
+    /**
+     * 处理扫描str 页面赋值
+     */
+    private void dealwitStr(String string) {
+        Vibrator vibrator = (Vibrator) this.getSystemService(this.VIBRATOR_SERVICE);
+        vibrator.vibrate(1000);
+        String[] split = string.split("\n| ");
+        for (int i = 0; i < split.length; i++) {
+            if (!split[i].trim().equals("")) {
+                String[] strings = split[i].trim().split(":");
+                switch (strings[0]) {
+                    case "EUI":
+                        mTvDeviceid.setText(strings[1]);
+                        mEui64 = strings[1];
+                        break;
+                    case "Type":
+                        mTvDeviceType.setText(strings[1]);
+                        mStrDeviceType = strings[1];
+                        break;
+                }
+            }
+        }
+
+//        if (mTvDeviceType.getText().toString().equals("TE-OUTLET-WIFI")) {
+//            Intent intent = new Intent(this, SettingSocketFirstStepActivity.class);
+//            intent.putExtra(Fields.DEVICE_TYPE,mStrDeviceType);
+//            intent.putExtra(Fields.EUI64,mEui64);
+//            startActivityForResult(intent,REQUEST_SETTING_WIFI);
+//        }
+
+    }
+
+    //判断是否启用nfc
+    public static boolean hasNfc(Context context) {
+        boolean bRet = false;
+        if (context == null)
+            return bRet;
+        NfcManager manager = (NfcManager) context.getSystemService(Context.NFC_SERVICE);
+        NfcAdapter adapter = manager.getDefaultAdapter();
+        if (adapter != null && adapter.isEnabled()) {
+            // adapter存在，能启用
+            bRet = true;
+        }
+        return bRet;
+    }
+
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            //进入到这里代表没有权限.
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                //已经禁止提示了
+                Toast.makeText(App.getContext(), "您已禁止该权限，需要重新开启。", Toast.LENGTH_SHORT).show();
+
+            } else {
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, REQUEST_CODE);
+            }
+
+        } else {
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //用户同意授权
+                } else {
+                    //用户拒绝授权
+                }
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_1) {
+            //
+            mTllScanfirst.setVisibility(View.GONE);
+            mLlScanFinsh.setVisibility(View.VISIBLE);
+            mRetryScan.setVisibility(View.VISIBLE);
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    String string = data.getStringExtra(Fields.PAGE_DATA);
+                    dealwitStr(string);
+                }
+            }
+        }
+        if (requestCode == REQUEST_CODE_2) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    String string = data.getStringExtra(Fields.PAGE_DATA);
+                    dealwitStr(string);
+                }
+            }
+        }
+
+//        if (requestCode == REQUEST_SETTING_WIFI) {
+//            if (resultCode == RESULT_OK) {
+//                if (data != null) {
+//                    String string = data.getStringExtra(Fields.PAGE_DATA);
+//                    dealwitStr(string);
+//                }
+//                Toast.makeText(this, "设置成功", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+    }
+}

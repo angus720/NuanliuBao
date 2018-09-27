@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_bg"
+    android:orientation="vertical"
+    tools:context=".ui.activity.AddressEditActivity">
+
+    <include layout="@layout/head_toolbar_payment" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:background="@null"
+            android:hint="请输入姓名"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <View style="@style/view_line_gray" />
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_user_phone"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:background="@null"
+            android:hint="请输入号码"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <View style="@style/view_line_gray" />
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:id="@+id/trl_address_choose"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tv_user_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="安徽省 合肥市 高新区 经济开发区"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:src="@mipmap/go_next" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <View style="@style/view_line_gray" />
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_user_address"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:background="@null"
+            android:hint="请输入详细地址"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <View
+            style="@style/view_line_gray"
+            android:layout_height="10dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:text="设为默认地址"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <nuanliu.com.modao.widget.SwitchButton
+                android:layout_width="58dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                app:sb_background="#FFF"
+                app:sb_border_width="0.8dp"
+                app:sb_button_color="@color/white"
+                app:sb_checked="true"
+                app:sb_checked_color="@color/switchbuttocheck"
+                app:sb_checkline_color="@color/switchbuttocheck"
+                app:sb_shadow_effect="false"
+                app:sb_show_indicator="false"
+                app:sb_uncheckcircle_color="@color/white" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

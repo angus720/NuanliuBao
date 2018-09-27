@@ -1,0 +1,152 @@
+package nuanliu.com.modao.ui.fragment;
+
+
+import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseFragment;
+import nuanliu.com.modao.bean.NoticeListBean;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.ui.activity.EquipmentMonitorActivity;
+import nuanliu.com.modao.ui.activity.FeedbackActivity;
+import nuanliu.com.modao.ui.activity.NoticeActivity;
+import nuanliu.com.modao.ui.activity.OnlinePaymentActivity;
+import nuanliu.com.modao.ui.activity.TroubleRepairActivity;
+import nuanliu.com.modao.widget.HomeBanner;
+import nuanliu.com.modao.widget.convenientbanner.ConvenientBanner;
+import nuanliu.com.modao.widget.convenientbanner.holder.CBViewHolderCreator;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * 首页Fragment
+ * A simple {@link Fragment} subclass.
+ */
+public class MainHomeFragment extends BaseFragment {
+
+    @BindView(R.id.myhome_banner)
+    ConvenientBanner homeBanner;
+    @BindView(R.id.iv_trouble_repair)
+    ImageView ivTroubleRepair;
+    @BindView(R.id.iv_online_payment)
+    ImageView ivOnlinePayment;
+    @BindView(R.id.iv_equipment_monitor)
+    ImageView ivEquipmentMonitor;
+    @BindView(R.id.iv_feedback)
+    ImageView ivFeedback;
+    @BindView(R.id.tv_important_notice)
+    TextView tvImportantNotice;
+//    @BindView(R.id.tv_notice_date)
+//    TextView tvNoticeDate;
+
+    private int[] imgs = new int[]{R.mipmap.banner};
+    private List<Integer> bannerImageId = new ArrayList<>();
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_main_home;
+    }
+
+    @Override
+    protected void logicalPro() {
+        initView();
+        initData();
+    }
+
+    private void initData() {
+        getAnnouncement();
+    }
+
+    private void initView() {
+        tvImportantNotice.setSelected(true);
+        for (int i = 0; i < imgs.length; i++) {
+            bannerImageId.add(imgs[i]);
+        }
+        homeBanner.setCanLoop(true);
+        homeBanner.getViewPager().setOffscreenPageLimit(2);
+        homeBanner.setManualPageable(true);
+        homeBanner.setPages(new CBViewHolderCreator() {
+            @Override
+            public Object createHolder() {
+                return new HomeBanner();
+            }
+        }, bannerImageId)
+                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
+                .setPageIndicator(new int[]{R.drawable.ic_page_indicator, R.drawable.ic_page_indicator_focused});
+    }
+
+    @OnClick({R.id.iv_online_payment, R.id.iv_trouble_repair, R.id.iv_equipment_monitor, R.id.iv_feedback, R.id.rl_notice})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.iv_online_payment:
+                startActivity(new Intent(getActivity(), OnlinePaymentActivity.class));
+                break;
+            case R.id.iv_trouble_repair:
+                startActivity(new Intent(getActivity(), TroubleRepairActivity.class));
+                break;
+            case R.id.iv_equipment_monitor:
+                startActivity(new Intent(getActivity(), EquipmentMonitorActivity.class));
+                break;
+            case R.id.iv_feedback:
+                startActivity(new Intent(getActivity(), FeedbackActivity.class));
+                break;
+            case R.id.rl_notice:
+                startActivity(new Intent(getActivity(), NoticeActivity.class));
+                break;
+        }
+    }
+
+    private void getAnnouncement() {
+        ServiceFactory
+                .getApis()
+                .getAnnouncement("")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<NoticeListBean>bindToLifecycle())
+                .subscribe(new Subscriber<NoticeListBean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(NoticeListBean noticeListBean) {
+                        if (noticeListBean.getStatus() == 1) {
+                            if (null != noticeListBean.getBody().getDatas() && noticeListBean.getBody().getDatas().size() != 0) {
+                                tvImportantNotice.setText(noticeListBean.getBody().getDatas().get(0).getContent());
+                            } else {
+                                tvImportantNotice.setText("暂无公告");
+                            }
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        homeBanner.startTurning(2000L);
+        getAnnouncement();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+}

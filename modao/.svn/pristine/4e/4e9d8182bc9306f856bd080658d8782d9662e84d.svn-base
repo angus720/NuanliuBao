@@ -1,0 +1,170 @@
+package nuanliu.com.modao.ui.fragment;
+
+
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+
+import com.classic.common.MultipleStatusView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseFragment;
+import nuanliu.com.modao.ui.activity.NewOrderActivity;
+import nuanliu.com.modao.ui.adapter.RepariOrderAdapter;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.widget.refreshview.XRefreshView;
+import nuanliu.com.modao.widget.refreshview.XRefreshViewFooter;
+
+/**
+ * 全部工单Fragment
+ * A simple {@link Fragment} subclass.
+ */
+public class AllOrderFragment extends BaseFragment implements XRefreshView.XRefreshViewListener {
+
+    @BindView(R.id.rv_recyclerview)
+    RecyclerView mRvRecyclerview;
+    @BindView(R.id.content_view)
+    LinearLayout mContentView;
+    @BindView(R.id.multiplestatusview_all)
+    MultipleStatusView mMultiplestatusview;
+    @BindView(R.id.xrefreshview)
+    XRefreshView mXrefreshview;
+
+    private List<String> mDatas = new ArrayList<>();
+    private RepariOrderAdapter<String> mAdapter;
+    private final LinearLayout.LayoutParams mLayoutParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+    private int mStartPage = 1;
+    private int mPagesize = 10;
+
+    private boolean menableLoadmore = false;
+
+    private int mloadmorecount = 1;
+
+    private boolean isFirst = true;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_all_order;
+    }
+
+    @Override
+    protected void logicalPro() {
+        initView();
+        initData();
+    }
+
+    private void initView() {
+        mXrefreshview.setPinnedTime(1000);
+        mXrefreshview.setMoveForHorizontal(true);
+        mXrefreshview.setPullLoadEnable(true);
+        mXrefreshview.setAutoLoadMore(false);
+
+        mXrefreshview.enableReleaseToLoadMore(true);
+        mXrefreshview.enableRecyclerViewPullUp(true);
+        mXrefreshview.enablePullUpWhenLoadCompleted(true);
+        mXrefreshview.setXRefreshViewListener(this);
+
+        mAdapter = new RepariOrderAdapter<>(getActivity());
+        mAdapter.setCustomLoadMoreView(new XRefreshViewFooter(getActivity()));
+        mRvRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRvRecyclerview.setAdapter(mAdapter);
+
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        //设置动画时间
+        animator.setAddDuration(300);
+        animator.setRemoveDuration(300);
+        mRvRecyclerview.setItemAnimator(animator);
+    }
+
+    private void initData() {
+        mMultiplestatusview.setOnRetryClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!isFirst) {
+            onRefresh(true);
+        }
+        isFirst = false;
+    }
+
+    private void emptyView() {
+        View emptyView = LayoutInflater.from(getActivity()).inflate(R.layout.order_empty_view, null);
+        Button btnNewOrder = (Button) emptyView.findViewById(R.id.add_new_order);
+        btnNewOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IntentUtils.startActivity(getActivity(), NewOrderActivity.class);
+            }
+        });
+
+        mMultiplestatusview.showEmpty(emptyView, mLayoutParams);
+    }
+
+    @Override
+    public void onRefresh() {
+
+    }
+
+    @Override
+    public void onRefresh(boolean isPullDown) {
+        mXrefreshview.setLoadComplete(false);
+        mloadmorecount = 1;
+        menableLoadmore = true;
+        mStartPage = 1;
+//        getAddressList(SpUtil.getUser().getUsername(), mStartPage, mPagesize, true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mXrefreshview.stopRefresh();
+            }
+        }, 510);
+    }
+
+    @Override
+    public void onLoadMore(boolean isSilence) {
+        if (menableLoadmore) {
+            mStartPage = mloadmorecount * mPagesize;
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+//                    getAddressList(SpUtil.getUser().getUsername(), mStartPage, mPagesize, false);
+                }
+            }, 500);
+            mloadmorecount++;
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    mXrefreshview.setLoadComplete(true);
+                }
+            }, 500);
+        }
+    }
+
+    @Override
+    public void onRelease(float direction) {
+
+    }
+
+    @Override
+    public void onHeaderMove(double headerMovePercent, int offsetY) {
+
+    }
+}

@@ -1,0 +1,439 @@
+package nuanliu.com.modao.ui.fragment;
+
+
+import android.Manifest;
+import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
+import com.lljjcoder.style.citylist.Toast.ToastUtils;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.base.BaseFragment;
+import nuanliu.com.modao.bean.RxEventHeadBean;
+import nuanliu.com.modao.bean.UpImgBean;
+import nuanliu.com.modao.global.App;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.rxbus.RxBus;
+import nuanliu.com.modao.rxbus.Subscribe;
+import nuanliu.com.modao.ui.activity.AboutUsActivity;
+import nuanliu.com.modao.ui.activity.AddressManagerActivity;
+import nuanliu.com.modao.ui.activity.HeadSettingActivity;
+import nuanliu.com.modao.ui.activity.LoginActivity;
+import nuanliu.com.modao.ui.activity.ModifyPasswdActivity;
+import nuanliu.com.modao.ui.activity.ModifyUserNameActivity;
+import nuanliu.com.modao.ui.activity.OnlinePaymentActivity;
+import nuanliu.com.modao.ui.activity.TroubleRepairActivity;
+import nuanliu.com.modao.ui.dialog.CleanCacheDialog;
+import nuanliu.com.modao.utils.CacheUtil;
+import nuanliu.com.modao.utils.HeadConstant;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.utils.LogUtils;
+import nuanliu.com.modao.utils.MD5Utils;
+import nuanliu.com.modao.utils.SpUtil;
+import nuanliu.com.modao.utils.URLUtils;
+import nuanliu.com.modao.widget.PersonalPopupWindow;
+import nuanliu.com.modao.widget.photopicker.utils.FileUtils;
+import okhttp3.Call;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+import static nuanliu.com.modao.rxbus.RxBusCode.RX_BUS_CODE_HEAD_IMAGE_URI;
+
+/**
+ * 我的Fragment
+ * A simple {@link Fragment} subclass.
+ */
+public class MainMineFragment extends BaseFragment implements CleanCacheDialog.OnDismissListener {
+
+    @BindView(R.id.ll_login_register)
+    LinearLayout llLoginRegister;
+    @BindView(R.id.tv_user_name)
+    TextView tvUserName;
+    @BindView(R.id.tv_totalnum)
+    TextView mTvTotalnum;
+    @BindView(R.id.iv_user_icon)
+    CircleImageView civHead;
+    @BindView(R.id.tv_nickName)
+    TextView tvNickName;
+    //请求相机
+    private static final int REQUEST_CAMERA = 100;
+    //请求相册
+    private static final int REQUEST_PHOTO = 101;
+    //请求访问外部存储
+    private static final int READ_EXTERNAL_STORAGE_REQUEST_CODE = 103;
+    //请求写入外部存储
+    private static final int WRITE_EXTERNAL_STORAGE_REQUEST_CODE = 104;
+
+    private CleanCacheDialog mCleanCacheDialog;
+    private PersonalPopupWindow popupWindow;
+    private File tempFile;
+    private File fileLOGO;
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_main_mine;
+    }
+
+    @Override
+    protected void logicalPro() {
+        RxBus.get().register(this);
+        initData();
+        delayOnesecond();
+        if (null != SpUtil.getString("ima_head", "")) {
+            Glide.with(getContext()).load(SpUtil.getString("ima_head", "")).error(R.mipmap.mine_icon).into(civHead);
+        }
+        LogUtils.e("==================>" + SpUtil.getString("ima_head", ""));
+    }
+
+    private void initData() {
+        tvUserName.setText(SpUtil.getUser().getName());
+        initPopupView();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        tvUserName.setText(SpUtil.getUser().getName());
+    }
+
+    @OnClick({R.id.ll_heating_repair, R.id.ll_online_pay, R.id.trl_modify_name, R.id.trl_address_manager,
+            R.id.trl_about_us, R.id.trl_modify_password, R.id.trl_clear_cache, R.id.tv_exit_login, R.id.iv_user_icon})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.ll_heating_repair:
+                IntentUtils.startActivity(getActivity(), TroubleRepairActivity.class);
+                break;
+            case R.id.ll_online_pay:
+                IntentUtils.startActivity(getActivity(), OnlinePaymentActivity.class);
+                break;
+            case R.id.trl_modify_name:
+                IntentUtils.startActivity(getActivity(), ModifyUserNameActivity.class);
+                break;
+            case R.id.trl_address_manager:
+                IntentUtils.startActivity(getActivity(), AddressManagerActivity.class);
+                break;
+            case R.id.trl_about_us:
+                IntentUtils.startActivity(getActivity(), AboutUsActivity.class);
+                break;
+            case R.id.trl_modify_password:
+                IntentUtils.startActivity(getActivity(), ModifyPasswdActivity.class);
+                break;
+            case R.id.trl_clear_cache:
+                //清理缓存
+                if (mCleanCacheDialog == null) {
+                    mCleanCacheDialog = new CleanCacheDialog();
+                    mCleanCacheDialog.setDismissListener(this);
+                }
+                BaseActivity activity = (BaseActivity) getActivity();
+                mCleanCacheDialog.show(activity.getSupportFragmentManager(), "1");
+                break;
+            case R.id.tv_exit_login:
+                //退出登陆
+                SpUtil.saveLoginState(false);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET)
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                getActivity().startActivity(intent);
+                ServiceFactory.setApisNull();
+                getActivity().finish();
+                break;
+            case R.id.iv_user_icon:
+                //选择头像
+                showPopupView();
+                break;
+        }
+    }
+
+    private void refreshCachenumView() {
+        try {
+            String totalCacheSize = CacheUtil.getTotalCacheSize(App.getContext());
+            mTvTotalnum.setText(totalCacheSize);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDismissBack() {
+        refreshCachenumView();
+    }
+
+    private void delayOnesecond() {
+        Observable.timer(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Long>() {
+                    @Override
+                    public void onCompleted() {
+                        refreshCachenumView();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        refreshCachenumView();
+                    }
+
+                    @Override
+                    public void onNext(Long aLong) {
+
+                    }
+                });
+    }
+
+    public void showHead(Bitmap bitmap) {
+        civHead.setImageBitmap(bitmap);
+    }
+
+
+    //显示
+    public void showPopupView() {
+        View parent = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_personal, null);
+        popupWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.LEFT, 0, 0);
+    }
+
+    //隐藏
+    public void dismissPopupView() {
+        popupWindow.dismiss();
+    }
+
+    //判断
+    public boolean popupIsShowing() {
+        return popupWindow.isShowing();
+    }
+
+
+    //初始化popwindow
+    public void initPopupView() {
+        popupWindow = new PersonalPopupWindow(getActivity());
+        popupWindow.setOnItemClickListener(new PersonalPopupWindow.OnItemClickListener() {
+            @Override
+            public void onCaremaClicked() {
+                btnCameraClicked();
+            }
+
+            @Override
+            public void onPhotoClicked() {
+                btnPhotoClicked();
+            }
+
+            @Override
+            public void onCancelClicked() {
+                dismissPopupView();
+            }
+        });
+
+    }
+
+
+    //点击拍照
+    public void btnCameraClicked() {
+        //创建拍照存储的图片文件
+        tempFile = new File(FileUtils.checkDirPath(Environment.getExternalStorageDirectory()
+                .getPath() + "/image/"), MD5Utils.getMD5(HeadConstant.HEAD_IMAGE_NAME) + System
+                .currentTimeMillis() + ".jpg");
+        //权限判断
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission
+                .WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            //申请WRITE_EXTERNAL_STORAGE权限
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest
+                    .permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST_CODE);
+        } else {
+            //跳转到调用系统相机
+            gotoSystemCamera(tempFile, REQUEST_CAMERA);
+        }
+        if (popupIsShowing())
+            dismissPopupView();
+    }
+
+
+    //点击相册
+    public void btnPhotoClicked() {
+        //权限判断
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission
+                .READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            //申请READ_EXTERNAL_STORAGE权限
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest
+                            .permission.READ_EXTERNAL_STORAGE},
+                    READ_EXTERNAL_STORAGE_REQUEST_CODE);
+        } else {
+            //跳转到相册
+            gotoSystemPhoto(REQUEST_PHOTO);
+        }
+        if (popupIsShowing())
+            dismissPopupView();
+    }
+
+
+    //跳转设置界面
+    public void gotoHeadSettingActivity(Uri uri) {
+        if (uri == null) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), HeadSettingActivity.class);
+        intent.setData(uri);
+        startActivity(intent);
+    }
+
+    //跳转到调用系统图库
+    public void gotoSystemPhoto(int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media
+                .EXTERNAL_CONTENT_URI);
+        startActivityForResult(Intent.createChooser(intent, "请选择图片"), requestCode);
+    }
+
+    //跳转到调用系统相机
+    public void gotoSystemCamera(File tempFile, int requestCode) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //设置7.0中共享文件，分享路径定义在xml/file_paths.xml，下面2种方式都可以
+            //            intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            //            Uri contentUri = FileProvider.getUriForFile(mActivity, BuildConfig
+            // .APPLICATION_ID + "" +
+            //                    ".fileProvider", tempFile);
+            //            intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+
+            ContentValues contentValues = new ContentValues(1);
+            contentValues.put(MediaStore.Images.Media.DATA, tempFile
+                    .getAbsolutePath());
+            Uri uri = getContext().getContentResolver().insert(MediaStore.Images
+                    .Media.EXTERNAL_CONTENT_URI, contentValues);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        } else {
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
+        }
+        startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission Granted
+
+                gotoSystemCamera(tempFile, REQUEST_CAMERA);
+            }
+        } else if (requestCode == READ_EXTERNAL_STORAGE_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission Granted
+
+                gotoSystemPhoto(REQUEST_PHOTO);
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        switch (requestCode) {
+            case REQUEST_CAMERA: //调用系统相机返回
+                if (resultCode == Activity.RESULT_OK) {
+                    gotoHeadSettingActivity(Uri.fromFile(tempFile));
+                }
+                break;
+            case REQUEST_PHOTO:  //调用系统相册返回
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri uri = intent.getData();
+                    gotoHeadSettingActivity(uri);
+                }
+                break;
+        }
+    }
+
+    /**
+     * RxBus接收图片Uri
+     *
+     * @param bean RxEventHeadBean
+     */
+    @Subscribe(code = RX_BUS_CODE_HEAD_IMAGE_URI)
+    public void rxBusEvent(RxEventHeadBean bean) {
+        Uri uri = bean.getUri();
+        if (uri == null) {
+            return;
+        }
+        String cropImagePath = FileUtils.getRealFilePathFromUri(getContext(), uri);
+        try {
+            fileLOGO = new File(new URI(uri.toString()));
+            getfileIformation();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        Bitmap bitMap = BitmapFactory.decodeFile(cropImagePath);
+        if (bitMap != null)
+            civHead.setImageBitmap(bitMap);
+
+    }
+
+    /*
+     * 上传文件接口
+     * */
+    public void getfileIformation() {
+
+        //请求参数
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("telephone", App.getUser().getTelphone());
+
+        OkHttpUtils
+                .post()
+                .url(URLUtils.getWebRoot() + "/user/updateCUHeadProtrait.do")
+                .params(params)
+                .addFile("headPortrait", fileLOGO.getName(), fileLOGO)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        ToastUtils.showShortToast(getContext(), "上传失败");
+                        LogUtils.e("失败" + e.getMessage());
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        LogUtils.e("=========>" + response);
+                        UpImgBean upImgBean = new Gson().fromJson(response, UpImgBean.class);
+                        SpUtil.saveString("ima_head", upImgBean.getBody().getUser().getHeadPortrait());
+//                        ToastUtils.showShortToast(getContext(), "上传成功");
+                    }
+                });
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RxBus.get().unRegister(this);
+    }
+}

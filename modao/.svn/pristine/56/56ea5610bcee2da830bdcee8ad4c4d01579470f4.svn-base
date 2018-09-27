@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_bg"
+    android:orientation="vertical"
+    tools:context=".ui.activity.ModifyUserNameActivity">
+
+    <include layout="@layout/head_toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_new_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:hint="请输入修改名称"
+            android:paddingRight="5dp"
+            android:paddingLeft="8dp"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <View style="@style/view_line_gray"
+            android:layout_height="20dp"/>
+
+        <Button
+            android:id="@+id/btn_modify_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/radio_button_select_bg"
+            android:text="修改"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

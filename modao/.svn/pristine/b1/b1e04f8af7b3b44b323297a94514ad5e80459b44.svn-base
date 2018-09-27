@@ -1,0 +1,10 @@
+package nuanliu.com.modao.bean;
+
+import android.support.annotation.NonNull;
+
+public class OweItemBean extends CommonResponse implements Comparable<OweItemBean> {
+    @Override
+    public int compareTo(@NonNull OweItemBean o) {
+        return this.toString().compareTo(o.toString());
+    }
+}

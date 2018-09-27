@@ -1,0 +1,103 @@
+package com.nuanliu.finme.bean;
+
+import com.nuanliu.finme.base.BaseResponseForRepair;
+
+import java.util.List;
+
+/**
+ * @创建者 SoleJoke
+ * @创建时间 on 2017/6/9
+ * @描述
+ * @更新者 　$Author
+ * @更新时间 　2017/6/9
+ * @更新描述　　${ToDo}
+ */
+
+public class RepairOrderProgressBean extends BaseResponseForRepair {
+
+    /**
+     * body : {"orderid":"W14969020758150001","progress":[{"detail":"工单编号W14969020758150001","name":"生成维修工单","time":1496902076},{"detail":"维修人公司最高管理员 电话","name":"分配工单","time":1496902262},{"detail":"公司最高管理员已接收工单","name":"接收工单","time":1496917933}]}
+     * status : 1
+     */
+
+    private BodyBean body;
+    private int status;
+
+    public BodyBean getBody() {
+        return body;
+    }
+
+    public void setBody(BodyBean body) {
+        this.body = body;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public static class BodyBean {
+        /**
+         * orderid : W14969020758150001
+         * progress : [{"detail":"工单编号W14969020758150001","name":"生成维修工单","time":1496902076},{"detail":"维修人公司最高管理员 电话","name":"分配工单","time":1496902262},{"detail":"公司最高管理员已接收工单","name":"接收工单","time":1496917933}]
+         */
+
+        private String orderid;
+        private List<ProgressBean> progress;
+
+        public String getOrderid() {
+            return orderid;
+        }
+
+        public void setOrderid(String orderid) {
+            this.orderid = orderid;
+        }
+
+        public List<ProgressBean> getProgress() {
+            return progress;
+        }
+
+        public void setProgress(List<ProgressBean> progress) {
+            this.progress = progress;
+        }
+
+        public static class ProgressBean {
+            /**
+             * detail : 工单编号W14969020758150001
+             * name : 生成维修工单
+             * time : 1496902076
+             */
+
+            private String detail;
+            private String name;
+            private long    time;
+
+            public String getDetail() {
+                return detail;
+            }
+
+            public void setDetail(String detail) {
+                this.detail = detail;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public long getTime() {
+                return time;
+            }
+
+            public void setTime(int time) {
+                this.time = time;
+            }
+        }
+    }
+}

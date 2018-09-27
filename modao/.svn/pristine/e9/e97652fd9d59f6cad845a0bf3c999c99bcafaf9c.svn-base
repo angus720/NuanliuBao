@@ -1,0 +1,39 @@
+package nuanliu.com.modao.network;
+
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import nuanliu.com.modao.bean.UploadImgRes;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import rx.Observable;
+
+/**
+ * Created by Deity on 2016/12/15.
+ */
+
+public class ServiceBridge {
+
+    public static Observable<UploadImgRes> UpLoadImg(List<File> files) {
+        List<MultipartBody.Part> parts = new ArrayList<>();
+        RequestBody description =
+                RequestBody.create(
+                        MediaType.parse("multipart/form-data"), "file");
+        for (int i = 0; i < files.size(); i++) {
+            File file = files.get(i);
+            RequestBody requestFile =
+                    RequestBody.create( MediaType.parse("multipart/form-data"), file );
+            MultipartBody.Part body =
+                    MultipartBody.Part.createFormData("file" + (i + 1), file.getName(), requestFile);
+            parts.add(body);
+        }
+
+        return ServiceFactory.getApis()
+                .upLoadFile(description, parts);
+    }
+
+
+}

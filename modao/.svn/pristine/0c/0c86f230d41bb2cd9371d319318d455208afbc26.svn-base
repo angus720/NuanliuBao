@@ -1,0 +1,57 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.bean.RepairScheduleBean;
+import nuanliu.com.modao.ui.adapter.RepairScheduleAdapter;
+
+/**
+ * 工单详情
+ */
+
+public class OrderDetailActivity extends BaseActivity {
+
+    @BindView(R.id.repair_progress)
+    RecyclerView mRecyclerview;
+    private RepairScheduleAdapter<RepairScheduleBean> mAdapter;
+    private String mOrderid;
+    private List mArrayList= new ArrayList();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initData();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_order_detail;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("工单详情");
+        mRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new RepairScheduleAdapter(this);
+        mRecyclerview.setAdapter(mAdapter);
+    }
+
+    private void initData() {
+        mArrayList.add(new RepairScheduleBean(1,"已完工","2017-02-05 11:45","接单人周师傅 电话153000000"));
+        mArrayList.add(new RepairScheduleBean(1,"维修中","2017-02-05 11:45","正在维修中"));
+        mArrayList.add(new RepairScheduleBean(1,"已到达","2017-02-05 11:45","已经抵达 "));
+        mArrayList.add(new RepairScheduleBean(1,"工单已确认","2017-02-05 11:45","起点XX锅炉房 终点 "));
+        mArrayList.add(new RepairScheduleBean(1,"已派单","2017-02-05 11:45","维修周师傅 电话153000000"));
+        mArrayList.add(new RepairScheduleBean(1,"等待派单","2017-02-04 11:45","等待管理人员派单"));
+        mArrayList.add(new RepairScheduleBean(1,"维修工单已经生成","2017-02-04 10:45","工单编号 AS534545"));
+        mAdapter.addData(mArrayList);
+    }
+}

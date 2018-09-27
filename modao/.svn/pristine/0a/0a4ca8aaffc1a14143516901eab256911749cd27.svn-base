@@ -1,0 +1,24 @@
+package nuanliu.com.modao.network;
+
+import java.util.List;
+
+import nuanliu.com.modao.bean.UploadImgRes;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import rx.Observable;
+
+public interface Apis {
+
+    /**
+     * 图片上传接口
+     */
+    @Multipart
+    @POST("file/appUploadTest/image/false")
+    Observable<UploadImgRes> upLoadFile(
+            @Part("description") RequestBody description,
+            @Part List<MultipartBody.Part> parts
+    );
+}

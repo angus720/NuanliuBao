@@ -1,0 +1,153 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.widget.FrameLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.ui.fragment.AllOrderFragment;
+import nuanliu.com.modao.ui.fragment.FinishedOrderFragment;
+import nuanliu.com.modao.ui.fragment.ProcessingOrderFragment;
+import nuanliu.com.modao.ui.fragment.UnFinishedOrderFragment;
+import nuanliu.com.modao.utils.IntentUtils;
+
+/**
+ * 故障报修
+ */
+
+public class TroubleRepairActivity extends BaseActivity {
+
+    @BindView(R.id.rb_all_order)
+    RadioButton rbAllOrder;
+    @BindView(R.id.rb_unfinished_order)
+    RadioButton rbUnfinishedOrder;
+    @BindView(R.id.rb_processing_order)
+    RadioButton rbProcessingOrder;
+    @BindView(R.id.rb_finished_order)
+    RadioButton rbFinishedOrder;
+    @BindView(R.id.rg_repair)
+    RadioGroup rgRepair;
+    @BindView(R.id.fl_order_list)
+    FrameLayout flOrderList;
+
+    private AllOrderFragment allOrderFragment;
+    private UnFinishedOrderFragment unFinishedOrderFragment;
+    private ProcessingOrderFragment processingOrderFragment;
+    private FinishedOrderFragment finishedOrderFragment;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initEvent();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_trouble_repair;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("故障报修");
+    }
+
+    private void initEvent() {
+        rgRepair.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                FragmentManager supportFragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+                hideFrament(fragmentTransaction);
+
+                switch (checkedId) {
+                    case R.id.rb_all_order:
+                        if (null == allOrderFragment) {
+                            allOrderFragment = new AllOrderFragment();
+                            fragmentTransaction.add(R.id.fl_order_list, allOrderFragment, "全部");
+                        } else {
+                            fragmentTransaction.show(allOrderFragment);
+                        }
+                        changeColorAndBg(rbAllOrder, rbUnfinishedOrder, rbProcessingOrder, rbFinishedOrder);
+                        break;
+                    case R.id.rb_unfinished_order:
+                        if (null == unFinishedOrderFragment) {
+                            unFinishedOrderFragment = new UnFinishedOrderFragment();
+                            fragmentTransaction.add(R.id.fl_order_list, unFinishedOrderFragment, "待处理");
+                        } else {
+                            fragmentTransaction.show(unFinishedOrderFragment);
+                        }
+                        changeColorAndBg(rbUnfinishedOrder, rbAllOrder, rbProcessingOrder, rbFinishedOrder);
+                        break;
+                    case R.id.rb_processing_order:
+                        if (null == processingOrderFragment) {
+                            processingOrderFragment = new ProcessingOrderFragment();
+                            fragmentTransaction.add(R.id.fl_order_list, processingOrderFragment, "处理中");
+                        } else {
+                            fragmentTransaction.show(unFinishedOrderFragment);
+                        }
+                        changeColorAndBg(rbProcessingOrder, rbUnfinishedOrder, rbAllOrder, rbFinishedOrder);
+                        break;
+                    case R.id.rb_finished_order:
+                        if (null == finishedOrderFragment) {
+                            finishedOrderFragment = new FinishedOrderFragment();
+                            fragmentTransaction.add(R.id.fl_order_list, finishedOrderFragment, "已完成");
+                        } else {
+                            fragmentTransaction.show(finishedOrderFragment);
+                        }
+                        changeColorAndBg(rbFinishedOrder, rbAllOrder, rbUnfinishedOrder, rbProcessingOrder);
+                        break;
+                }
+                fragmentTransaction.commit();
+            }
+        });
+        rbAllOrder.setChecked(true);
+    }
+
+    /**
+     * 隐藏显示fragment
+     *
+     * @param fragmentTransaction
+     */
+
+    private void hideFrament(FragmentTransaction fragmentTransaction) {
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        allOrderFragment = (AllOrderFragment) supportFragmentManager.findFragmentByTag("全部");
+        unFinishedOrderFragment = (UnFinishedOrderFragment) supportFragmentManager.findFragmentByTag("待处理");
+        processingOrderFragment = (ProcessingOrderFragment) supportFragmentManager.findFragmentByTag("处理中");
+        finishedOrderFragment = (FinishedOrderFragment) supportFragmentManager.findFragmentByTag("已完成");
+        if (null != allOrderFragment) {
+            fragmentTransaction.hide(allOrderFragment);
+        }
+        if (null != unFinishedOrderFragment) {
+            fragmentTransaction.hide(unFinishedOrderFragment);
+        }
+        if (null != processingOrderFragment) {
+            fragmentTransaction.hide(processingOrderFragment);
+        }
+        if (null != finishedOrderFragment) {
+            fragmentTransaction.hide(finishedOrderFragment);
+        }
+    }
+
+    private void changeColorAndBg(RadioButton rb1, RadioButton rb2, RadioButton rb3, RadioButton rb4) {
+        rb1.setTextColor(getResources().getColor(R.color.white));
+        rb1.setBackgroundResource(R.drawable.radio_button_select_bg);
+        rb2.setTextColor(getResources().getColor(R.color.black));
+        rb2.setBackgroundResource(R.drawable.radio_button_unselect_bg);
+        rb3.setTextColor(getResources().getColor(R.color.black));
+        rb3.setBackgroundResource(R.drawable.radio_button_unselect_bg);
+        rb4.setTextColor(getResources().getColor(R.color.black));
+        rb4.setBackgroundResource(R.drawable.radio_button_unselect_bg);
+    }
+
+    @OnClick(R.id.tll_add_new)
+    public void onClick() {
+        IntentUtils.startActivity(this, NewOrderActivity.class);
+    }
+}

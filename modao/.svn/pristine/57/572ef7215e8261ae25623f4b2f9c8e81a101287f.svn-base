@@ -1,0 +1,23 @@
+package nuanliu.com.modao.bean;
+
+public class PayBean extends Dto {
+
+//    c_account  公司账户
+//    residentid  房间ID
+//    account_h   用户账号
+//    paymentAmount  应付金额
+
+//    private String c_account;
+//    private String residentid;
+//    private String account_h;
+//    private String paymentAmount;
+    private String biz_content;
+
+    public String getParams() {
+        return biz_content;
+    }
+
+    public void setParams(String biz_content) {
+        this.biz_content = biz_content;
+    }
+}

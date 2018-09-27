@@ -1,0 +1,92 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.widget.FrameLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+
+import butterknife.BindView;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.ui.fragment.ElectronicInvoiceFragment;
+import nuanliu.com.modao.ui.fragment.PaperInvoiceFragment;
+
+/**
+ * 发票信息
+ */
+
+public class InvoiceInfoActivity extends BaseActivity {
+
+
+    @BindView(R.id.rb_paper_invoice)
+    RadioButton rbPaperInvoice;
+    @BindView(R.id.rb_electronic_invoice)
+    RadioButton rbElectronicInvoice;
+    @BindView(R.id.rg_invoice)
+    RadioGroup rgInvoice;
+    @BindView(R.id.fl_invoice_info)
+    FrameLayout flInvoiceInfo;
+
+    private PaperInvoiceFragment paperInvoiceFragment;
+    private ElectronicInvoiceFragment electronicInvoiceFragment;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initEvent();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_invoice_info;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("发票信息");
+    }
+
+    /**
+     * 顶部按钮点击切换Fragment
+     */
+    private void initEvent() {
+        rgInvoice.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                FragmentManager supportFragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+
+                switch (checkedId) {
+                    case R.id.rb_paper_invoice:
+                        if (null == paperInvoiceFragment) {
+                            paperInvoiceFragment = new PaperInvoiceFragment();
+                            fragmentTransaction.add(R.id.fl_invoice_info, paperInvoiceFragment, "纸质发票");
+                            rbPaperInvoice.setTextColor(getResources().getColor(R.color.white));
+                            rbPaperInvoice.setBackgroundResource(R.drawable.radio_button_select_bg);
+                            rbElectronicInvoice.setTextColor(getResources().getColor(R.color.black));
+                            rbElectronicInvoice.setBackgroundResource(R.drawable.radio_button_unselect_bg);
+                        } else {
+                            fragmentTransaction.show(paperInvoiceFragment);
+                        }
+                        break;
+                    case R.id.rb_electronic_invoice:
+                        if (null == electronicInvoiceFragment) {
+                            electronicInvoiceFragment = new ElectronicInvoiceFragment();
+                            fragmentTransaction.add(R.id.fl_invoice_info, electronicInvoiceFragment, "电子发票");
+                            rbElectronicInvoice.setTextColor(getResources().getColor(R.color.white));
+                            rbElectronicInvoice.setBackgroundResource(R.drawable.radio_button_select_bg);
+                            rbPaperInvoice.setTextColor(getResources().getColor(R.color.black));
+                            rbPaperInvoice.setBackgroundResource(R.drawable.radio_button_unselect_bg);
+                        } else {
+                            fragmentTransaction.show(electronicInvoiceFragment);
+                        }
+                        break;
+                }
+                fragmentTransaction.commit();
+            }
+        });
+        rbPaperInvoice.setChecked(true);
+    }
+}

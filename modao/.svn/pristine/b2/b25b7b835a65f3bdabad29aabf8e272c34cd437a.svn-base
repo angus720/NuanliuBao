@@ -1,0 +1,229 @@
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
+
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
+
+#混淆时不使用大小写混合，混淆后的类名为小写
+-dontusemixedcaseclassnames
+#有了verbose这句话，混淆后就会生成映射文件
+#包含有类名->混淆后类名的映射关系
+#然后使用prontmappint制定映射文件的名称
+-verbose
+
+# 优化optimize是proguard的4个步骤之一
+-dontoptimize
+# 不做预校验，preverify是proguard的4个步骤之一
+# android不需要preverify,去掉这一步可加快混淆速度
+-dontpreverify
+
+#保护代码中的Annotation不被混淆
+#这在JSON实体映射时非常重要，比如fastJson
+-keepattributes *Annotation*
+
+# 混淆时所采用的算法
+#-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+
+-keep public class com.google.vending.licensing.ILicensingService
+-keep public class com.android.vending.licensing.ILicensingService
+
+# For native methods, see http://proguard.sourceforge.net/manual/examples.html#native
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+#-keepclassmembers public class * extends android.view.View {
+  #   void set*(***);
+  #   *** get*();
+  #}
+
+###-----------基本配置-不能被混淆的------------
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Fragment
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+
+#support.v4/v7包不混淆
+-keep class android.support.** { *; }
+-keep class android.support.v4.** { *; }
+-keep public class * extends android.support.v4.**
+-keep interface android.support.v4.app.** { *; }
+-keep class android.support.v7.** { *; }
+-keep public class * extends android.support.v7.**
+-keep interface android.support.v7.app.** { *; }
+-dontwarn android.support.**    # 忽略警告
+
+#保持注解继承类不混淆
+-keep class * extends java.lang.annotation.Annotation {*;}
+#保持Serializable实现类不被混淆
+-keepnames class * implements java.io.Serializable
+#保持Serializable不被混淆并且enum 类也不被混淆
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+
+#保持枚举enum类不被混淆
+-keepclassmembers enum * {
+  public static **[] values();
+ public static ** valueOf(java.lang.String);
+}
+#自定义组件不被混淆
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public void set*(...);
+    public void get*(...);
+}
+
+#不混淆资源类
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+
+# We want to keep methods in Activity that could be used in the XML attribute onClick
+-keepclassmembers class * extends android.app.Activity {
+   public void *(android.view.View);
+}
+
+#忽略警告 尽量不要使用，它会忽略所有警告，存在潜在风险
+#-ignorewarning
+
+
+#Glide
+-dontwarn com.bumptech.glide.**
+-keep class com.bumptech.glide.** { *; }
+
+# webView
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#      public *;
+#}
+#-keepclassmembers class * extends android.webkit.webViewClient {
+#      public void *(android.webkit.WebView, java.lang.String, android.graphics.Bitmap);
+#      public boolean *(android.webkit.WebView, java.lang.String);
+#}
+#-keepclassmembers class * extends android.webkit.webViewClient {
+#      public void *(android.webkit.webView, java.lang.String);
+#}
+
+# Retrofit
+-dontnote retrofit2.Platform
+-dontnote retrofit2.Platform$IOS$MainThreadExecutor
+-dontwarn retrofit2.Platform$Java8
+-keepattributes Signature
+-keepattributes Exceptions
+-keep class retrofit2.** { *; }
+-dontwarn retrofit2**
+
+
+#okhttp3
+-dontwarn com.squareup.okhttp3.**
+-keep class com.squareup.okhttp3.** { *;}
+-dontwarn okio.**
+
+# Gson
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.stream.** { *; }
+# Application classes that will be serialized/deserialized over Gson
+-keep class com.lansene.itou.bean.** { *; }
+
+# Rx
+-dontwarn sun.misc.**
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+   long producerIndex;
+   long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+
+# butterKnife
+-keep class butterknife.** { *; }
+-dontwarn butterknife.internal.**
+-keep class **$$ViewBinder { *; }
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+
+#极光推送
+-dontoptimize
+-dontpreverify
+-dontwarn cn.jpush.**
+-keep class cn.jpush.** { *; }
+
+-keep class in.srain.cube.views.ptr.** { *; }
+-dontwarn in.srain.cube.views.ptr.**
+#BGA下拉刷新框架不混淆
+-keep class cn.bingoogolapple.refreshlayout.** { *; }
+-dontwarn cn.bingoogolapple.refreshlayout**
+
+#vitamio
+-keep class io.vov.utils.** { *; }
+-keep class io.vov.vitamio.** { *; }
+-keep public class io.vov.vitamio.MediaPlayer { *; }
+-keep public class io.vov.vitamio.IMediaScannerService { *; }
+-keep public class io.vov.vitamio.MediaScanner { *; }
+-keep public class io.vov.vitamio.MediaScannerClient { *; }
+-keep public class io.vov.vitamio.VitamioLicense { *; }
+-keep public class io.vov.vitamio.Vitamio { *; }
+-keep public class io.vov.vitamio.MediaMetadataRetriever { *; }
+
+#leak
+-keep class com.squareup.leakcanary.** { *; }
+-dontwarn com.squareup.leakcanary**
+-keep class com.nuanliu.finme.utils.URLUtils { *; }
+-dontwarn com.nuanliu.finme.utils.URLUtils
+#net
+-keep class com.nuanliu.finme.network.** { *; }
+#bean json解析类
+-keep class com.nuanliu.finme.bean.** { *; }
+
+#-keep class com.linkedin.** { *; }
+
+-keep class org.simalliance.openmobileapi.** {*;}
+-keep class org.simalliance.openmobileapi.service.** {*;}
+
+#高德地图
+
+-dontwarn com.amap.api.**
+-dontwarn com.amap.apis.**
+-dontwarn com.a.a.**
+-dontwarn com.autonavi.**
+
+-keep class com.amap.api.** {*;}
+-keep class com.amap.apis.** {*;}
+-keep class com.autonavi.** {*;}
+-keep class com.a.a.** {*;}

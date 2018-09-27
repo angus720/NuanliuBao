@@ -1,0 +1,328 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.global.App;
+import nuanliu.com.modao.ui.dialog.ImageStudioDialog;
+import nuanliu.com.modao.utils.StringUtil;
+import nuanliu.com.modao.widget.SwitchButton;
+import nuanliu.com.modao.widget.luban.Luban;
+import nuanliu.com.modao.widget.luban.OnCompressListener;
+import nuanliu.com.modao.widget.photopicker.PhotoPagerActivity;
+import nuanliu.com.modao.widget.photopicker.PhotoPicker;
+import nuanliu.com.modao.widget.photopicker.PhotoPreview;
+
+/**
+ * 维修评价
+ */
+
+public class RepairEvaluationActivity extends BaseActivity {
+
+    @BindView(R.id.rating)
+    RatingBar mRatingBar;
+    @BindView(R.id.iv_one)
+    net.qiujuer.genius.ui.widget.ImageView mIvOne;
+    @BindView(R.id.iv_one_delete)
+    ImageView mIvOneDelete;
+    @BindView(R.id.iv_two_delete)
+    ImageView mIvTwoDelete;
+    @BindView(R.id.iv_two)
+    net.qiujuer.genius.ui.widget.ImageView mIvTwo;
+    @BindView(R.id.iv_three)
+    net.qiujuer.genius.ui.widget.ImageView mIvThree;
+    @BindView(R.id.iv_three_delete)
+    ImageView mIvThreeDelete;
+    @BindView(R.id.ll_two_defalut)
+    LinearLayout mLlTwoDefalut;
+    @BindView(R.id.ll_three_default)
+    LinearLayout mLlThreeDefault;
+    @BindView(R.id.order_finished)
+    SwitchButton orderFinished;
+    @BindView(R.id.et_note)
+    EditText etNote;
+    @BindView(R.id.evaluation1)
+    TextView evaluation1;
+    @BindView(R.id.evaluation2)
+    TextView evaluation2;
+    @BindView(R.id.evaluation3)
+    TextView evaluation3;
+    @BindView(R.id.evaluation4)
+    TextView evaluation4;
+    @BindView(R.id.evaluation5)
+    TextView evaluation5;
+    @BindView(R.id.evaluation6)
+    TextView evaluation6;
+    @BindView(R.id.evaluation7)
+    TextView evaluation7;
+    @BindView(R.id.evaluation8)
+    TextView evaluation8;
+
+    private ImageStudioDialog mIVStudioDialog;
+    private List<String> mListPicpath = new ArrayList<>();
+    private List<String> mencodingPic = new ArrayList<>();
+
+    private static final int REQUEST_CODE_PHOTO_PREVIEW = 102;
+    private static final int REQUEST_CAMERA_CODE = 103;
+
+    private boolean orderState = false;
+    private int isFinished;
+    private boolean flag;
+    private TextView[] tvs;
+    private String note;
+    private String evaluation;
+    private float rate;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initData();
+        checkPermission();
+        initEvent();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_repair_evaluation;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("维修评价");
+        refreshImageview();
+        tvs = new TextView[]{evaluation1, evaluation2, evaluation3, evaluation4, evaluation5, evaluation6, evaluation7, evaluation8};
+        for (int i = 0; i < tvs.length; i++) {
+            changeBg(tvs[i]);
+        }
+    }
+
+    private void initData() {
+        mRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                rate = rating;
+                Toast.makeText(RepairEvaluationActivity.this, "评价了" + rating + "星", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        orderFinished.setChecked(orderState);
+    }
+
+    private void initEvent() {
+        orderFinished.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+                orderState = isChecked;
+            }
+        });
+    }
+
+    private void getData() {
+        if (orderState == true) {
+            isFinished = 1;
+        } else {
+            isFinished = 0;
+        }
+        note = etNote.getText().toString().trim();
+    }
+
+    @OnClick({R.id.order_finished, R.id.iv_one, R.id.iv_two, R.id.iv_three, R.id.btn_submit})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.order_finished:
+                break;
+            case R.id.iv_one:
+                pictureClick(1, "imone.jpg");
+                break;
+            case R.id.iv_two:
+                pictureClick(2, "imTwo.jpg");
+                break;
+            case R.id.iv_three:
+                pictureClick(3, "imthree.jpg");
+                break;
+            case R.id.btn_submit:
+//                Log.e("==============>", evaluation);
+                break;
+        }
+    }
+
+    /**
+     * 图片点击
+     *
+     * @param number
+     * @param name
+     */
+    private void pictureClick(int number, String name) {
+
+        if (mListPicpath.size() >= number) {
+
+            //预览+加删除
+            Intent intent = new Intent(this, PhotoPagerActivity.class);
+            intent.putExtra(PhotoPreview.EXTRA_CURRENT_ITEM, number - 1);
+            intent.putStringArrayListExtra(PhotoPreview.EXTRA_PHOTOS, (ArrayList<String>) mListPicpath);
+            intent.putExtra(PhotoPreview.EXTRA_SHOW_DELETE, true);
+            startActivityForResult(intent, REQUEST_CODE_PHOTO_PREVIEW);
+        } else {
+            mIVStudioDialog = ImageStudioDialog.newInstance(name, false, 3 - mListPicpath.size());
+            mIVStudioDialog.show(getSupportFragmentManager(), name, new ImageStudioDialog.Callback() {
+                @Override
+                public void callback(List<String> list) {
+                    mListPicpath.addAll(list);
+                    refreshImageview();
+                }
+            });
+        }
+    }
+
+    private void refreshImageview() {
+
+        mIvOne.setVisibility(View.VISIBLE);
+        mIvTwo.setVisibility(mListPicpath.size() >= 1 ? View.VISIBLE : View.GONE);
+        mLlTwoDefalut.setVisibility(mListPicpath.size() >= 1 ? View.VISIBLE : View.GONE);
+        mIvThree.setVisibility(mListPicpath.size() >= 2 ? View.VISIBLE : View.GONE);
+        mLlThreeDefault.setVisibility(mListPicpath.size() >= 2 ? View.VISIBLE : View.GONE);
+
+        switch (mListPicpath.size()) {
+            case 0:
+                mIvOne.setImageBitmap(null);
+                mIvTwo.setImageBitmap(null);
+                mIvThree.setImageBitmap(null);
+                break;
+            case 1:
+                Glide.with(this).load(mListPicpath.get(0)).into(mIvOne);
+                mIvTwo.setImageBitmap(null);
+                mIvThree.setImageBitmap(null);
+                break;
+            case 2:
+                Glide.with(this).load(mListPicpath.get(0)).into(mIvOne);
+                Glide.with(this).load(mListPicpath.get(1)).into(mIvTwo);
+                mIvThree.setImageBitmap(null);
+                break;
+            case 3:
+                Glide.with(this).load(mListPicpath.get(0)).into(mIvOne);
+                Glide.with(this).load(mListPicpath.get(1)).into(mIvTwo);
+                Glide.with(this).load(mListPicpath.get(2)).into(mIvThree);
+                break;
+        }
+    }
+
+    /**
+     * 压缩图片
+     *
+     * @param path
+     */
+    private void compresspic(String path) {
+
+        Luban.with(this)
+                .load(path)
+                .ignoreBy(100)
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(File file) {
+                        String picEncodingToString = StringUtil.encodeBase64File(file);
+                        mencodingPic.add(picEncodingToString);
+                        if (mencodingPic.size() == mListPicpath.size()) {
+//                            uploadPic(mencodingPic);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                }).launch();
+    }
+
+    private void checkPermission() {
+        //相机
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                //进入到这里代表没有权限.
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                    //已经禁止提示了
+                    Toast.makeText(App.getContext(), "您已禁止该权限，需要重新开启。", Toast.LENGTH_SHORT).show();
+                } else {
+                    ActivityCompat.requestPermissions(RepairEvaluationActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_CODE);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case PhotoPicker.REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        mListPicpath.addAll(data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS));
+                        refreshImageview();
+                    }
+                }
+                break;
+            case REQUEST_CODE_PHOTO_PREVIEW:
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        mListPicpath.clear();
+                        mListPicpath.addAll(data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS));
+                        refreshImageview();
+                    }
+                }
+                break;
+        }
+    }
+
+    private void changeBg(final TextView textView) {
+        textView.setTextColor(getResources().getColor(R.color.black));
+        textView.setBackgroundResource(R.drawable.btn_common_bg);
+        textView.setTag(false);
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flag = (boolean) textView.getTag();
+                if (!flag) {
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                    textView.setBackgroundResource(R.drawable.btn_choose_bg);
+                    textView.setTag(true);
+//                    evaluation = textView.getText().toString();
+                } else {
+                    textView.setTextColor(getResources().getColor(R.color.black));
+                    textView.setBackgroundResource(R.drawable.btn_common_bg);
+                    textView.setTag(false);
+                }
+                evaluation = textView.getText().toString();
+            }
+        });
+    }
+
+}

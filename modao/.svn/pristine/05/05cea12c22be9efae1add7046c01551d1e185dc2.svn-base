@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.activity.DeviceBindingActivity">
+
+    <include layout="@layout/head_toolbar"/>
+
+    <RelativeLayout
+        android:layout_marginBottom="0.5dp"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@color/white">
+
+        <TextView
+            android:text="设备信息"
+            style="@style/tv_in_rl_address_des"/>
+
+        <nuanliu.com.modao.widget.TouchTextView
+            android:id="@+id/retry_scan"
+            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@color/white"
+            android:drawableLeft="@mipmap/ic_scan"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:text="重新扫描"
+            android:textColor="@color/charactergray"
+            android:textSize="15sp"
+            app:gTouchEffect="ripple"/>
+
+
+    </RelativeLayout>
+
+
+    <nuanliu.com.modao.widget.TouchLinearLayout
+        android:id="@+id/tll_scanfirst"
+        android:layout_width="match_parent"
+        android:layout_height="127dp"
+        android:layout_marginTop="0.5dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:gTouchEffect="ripple">
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@mipmap/ic_scan"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="请扫描二维码进行绑定"
+            android:textColor="@color/orange_bg"
+            android:textSize="15sp"/>
+
+    </nuanliu.com.modao.widget.TouchLinearLayout>
+
+    <!--扫描完成后显示的界面-->
+    <LinearLayout
+        android:id="@+id/ll_scan_finsh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="0.5dp"
+            android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="通讯类型"
+                android:textColor="@color/charactergray"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/tv_communication"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:text="请重试"
+                android:textColor="@color/charactergray"
+                android:textSize="15sp"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="0.5dp"
+            android:background="@color/white"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="ICCID"
+                android:textColor="@color/charactergray"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/tv_iccid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:text="请重试"
+                android:textColor="@color/charactergray"
+                android:textSize="15sp"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginTop="0.5dp"
+            android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="硬件序列号"
+                android:textColor="@color/charactergray"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:id="@+id/tv_deviceid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:text="请重试"
+                android:textColor="@color/charactergray"
+                android:textSize="15sp"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

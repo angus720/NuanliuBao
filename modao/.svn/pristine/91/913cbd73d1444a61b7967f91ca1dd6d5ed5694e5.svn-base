@@ -1,0 +1,145 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.base.BaseResponse;
+import nuanliu.com.modao.bean.ResidentItemBean;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.utils.SpUtil;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * 编辑缴费账户
+ */
+
+public class EditResidentInfoActivity extends BaseActivity {
+
+    @BindView(R.id.et_owner_name)
+    EditText etOwnerName;
+    @BindView(R.id.et_owner_number)
+    EditText etOwnerNumber;
+    @BindView(R.id.tv_company_name)
+    TextView tvCompanyName;
+
+    private ResidentItemBean itemBean;
+    private String companyName;
+    private String companyId;
+    private String residentId;
+    private String residentName;
+    private String residentCardNumber;
+
+    private static final int REQUEST_HEAT_COMPANY = 100;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initData();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_edit_resident_info;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("编辑缴费账户");
+    }
+
+    private void initData() {
+        Intent intent = getIntent();
+        if (null != intent) {
+            if (intent.hasExtra(Fields.RESIDENT_ITEM)) {
+                itemBean = (ResidentItemBean) intent.getSerializableExtra(Fields.RESIDENT_ITEM);
+                companyName = itemBean.getCompanyName();
+                companyId = itemBean.getCompanyid();
+                residentCardNumber = itemBean.getAccount_h();
+                residentName = itemBean.getHouseholder();
+                residentId = itemBean.getResidentid();
+            }
+        }
+
+        etOwnerName.setText(residentName);
+        tvCompanyName.setText(companyName);
+        etOwnerNumber.setText(residentCardNumber);
+    }
+
+    private void getData() {
+        residentName = etOwnerName.getText().toString().trim() + "";
+        residentCardNumber = etOwnerNumber.getText().toString().trim() + "";
+    }
+
+    @OnClick({R.id.trl_choose_company, R.id.btn_confirm})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.trl_choose_company:
+                Intent intent = new Intent(this, ChooseCompanyActivity.class);
+                startActivityForResult(intent, REQUEST_HEAT_COMPANY);
+                break;
+            case R.id.btn_confirm:
+                getData();
+                upbdResident(SpUtil.getUser().getUsername(), residentId, companyId, residentName, residentCardNumber);
+                break;
+        }
+    }
+
+    private void upbdResident(String userName, String residentId, String companyId, String holderName, String account_h) {
+        ServiceFactory
+                .getApis()
+                .upbdResident(userName, residentId, companyId, holderName, account_h)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .compose(this.<BaseResponse>bindToLifecycle())
+                .subscribe(new Subscriber<BaseResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+                        if (baseResponse.getStatus() == 1) {
+                            Toast.makeText(EditResidentInfoActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+                            IntentUtils.startActivity(EditResidentInfoActivity.this, OnlinePaymentActivity.class);
+                        }
+                    }
+                });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_HEAT_COMPANY:
+                if (resultCode == RESULT_OK) {
+                    if (data.hasExtra(Fields.CHOOSE_COMPANY)) {
+                        companyName = data.getStringExtra(Fields.CHOOSE_COMPANY);
+                        tvCompanyName.setText(companyName);
+                    }
+                    if (data.hasExtra(Fields.COMPANY_ID)) {
+                        companyId = data.getStringExtra(Fields.COMPANY_ID);
+                    }
+                }
+                break;
+        }
+    }
+}

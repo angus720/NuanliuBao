@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <nuanliu.com.modao.widget.TouchTextView
+        android:id="@+id/photo"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/shape_rectangular_top2_5dp_bgwhite"
+        android:clickable="false"
+        android:gravity="center"
+        android:text="清除所有缓存，以及本地图片缓存"
+        android:textSize="13sp" />
+
+    <nuanliu.com.modao.widget.TouchTextView
+        android:id="@+id/tv_sure"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="0.5dp"
+        android:background="@drawable/shape_rectangular_bottom2_5dp"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="确定"
+        android:textColor="@color/characterblue"
+        android:textSize="16sp"
+        app:gTouchEffect="ripple" />
+
+    <nuanliu.com.modao.widget.TouchTextView
+        android:id="@+id/tv_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/shape_dialog_4_5dp"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="取消"
+        android:textColor="@color/characterblue"
+        android:textSize="16sp"
+        app:gTouchEffect="ripple" />
+
+</LinearLayout>

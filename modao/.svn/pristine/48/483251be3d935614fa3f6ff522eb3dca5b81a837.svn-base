@@ -1,0 +1,76 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+
+/**
+ * 选择缴费方式
+ */
+
+public class ChoosePayWayActivity extends BaseActivity {
+
+    @BindView(R.id.wechat_pay_check)
+    ImageView ivWechatPay;
+    @BindView(R.id.alipay_check)
+    ImageView ivAlipay;
+    @BindView(R.id.cloud_flash_pay_check)
+    ImageView ivCloudFlashPay;
+
+    public static final String WEIXIN_PAY = "1";
+    public static final String ALIPAY = "2";
+    public static final String CLOUD_FLASH_PAY = "3";
+    private String type = WEIXIN_PAY;
+
+    /*****************************************************************
+     * mMode参数解释： "00" - 启动银联正式环境 "01" - 连接银联测试环境
+     *****************************************************************/
+    private final String mMode = "01";
+    private static final String TN_URL_01 = "http://101.231.204.84:8091/sim/getacptn";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_choose_pay_way;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("选择缴费方式");
+    }
+
+    @OnClick({R.id.rl_wechat_pay, R.id.rl_alipay, R.id.rl_cloud_flash_pay, R.id.confirm_pay})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.rl_wechat_pay:
+                type = WEIXIN_PAY;
+                changeImage(ivWechatPay, ivAlipay, ivCloudFlashPay);
+                break;
+            case R.id.rl_alipay:
+                type = ALIPAY;
+                changeImage(ivAlipay, ivWechatPay, ivCloudFlashPay);
+                break;
+            case R.id.rl_cloud_flash_pay:
+                type = CLOUD_FLASH_PAY;
+                changeImage(ivCloudFlashPay, ivWechatPay, ivAlipay);
+                break;
+            case R.id.confirm_pay:
+                break;
+        }
+    }
+
+    private void changeImage(ImageView iv1, ImageView iv2, ImageView iv3) {
+        iv1.setImageResource(R.mipmap.pay_choose);
+        iv2.setImageResource(R.mipmap.pay_unchoose);
+        iv3.setImageResource(R.mipmap.pay_unchoose);
+    }
+}

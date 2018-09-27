@@ -1,0 +1,132 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.bean.AppUpdate;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.utils.UpdateUtil;
+import nuanliu.com.modao.widget.TouchRelativeLayout;
+
+/**
+ * 关于我们
+ */
+
+public class AboutUsActivity extends BaseActivity {
+
+    @BindView(R.id.versioncode)
+    TextView mVersioncode;
+    @BindView(R.id.rednew)
+    TextView mRednew;
+    @BindView(R.id.trl_update)
+    TouchRelativeLayout mTrlUpdate;
+
+    private PackageInfo mInfo;
+    private String mDownloadUrl;
+
+    //服务器下载完成的标志
+    private static final int DOWNFINISH = 101;
+    //intent标记
+    private static final int INSTALLREQUEST = 102;
+
+    private Handler mHandler;
+    private String mNewestVersion;
+    //是否可以去更新
+    private boolean goUpdate = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_about_us;
+    }
+
+    private void initView() {
+        initHandler();
+        getToolBar().setTitle("关于我们");
+        PackageManager manager = getPackageManager();
+        try {
+            mInfo = manager.getPackageInfo(this.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        mVersioncode.setText("Version" + mInfo.versionName);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initData();
+    }
+
+    private void initData() {
+
+    }
+
+    private void initHandler() {
+
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case DOWNFINISH:
+                        dismissLoading();
+
+                        Toast.makeText(AboutUsActivity.this, "下载完成", Toast.LENGTH_SHORT).show();
+
+                        File downFile = (File) msg.obj;
+
+                        UpdateUtil.installAPK(AboutUsActivity.this, downFile);
+                        break;
+                }
+            }
+        };
+    }
+
+    private void refreshView(AppUpdate appUpdate) {
+        mDownloadUrl = appUpdate.getDownload_url();
+        mNewestVersion = appUpdate.getNewest_version();
+        if (TextUtils.equals("v" + mInfo.versionName, appUpdate.getNewest_version())) {
+            mRednew.setVisibility(View.GONE);
+            goUpdate = false;
+        } else {
+            mRednew.setVisibility(View.VISIBLE);
+            goUpdate = true;
+        }
+    }
+
+    @OnClick({R.id.trl_update, R.id.tv_user_agreement})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.trl_update:
+                if (goUpdate) {
+//                    showUpdateDialog();
+                } else {
+                    mTrlUpdate.setClickable(false);
+                    Toast.makeText(this, "当前版本已是最新", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.tv_user_agreement:
+                IntentUtils.startActivity(this, UserAgreementActivity.class);
+                break;
+        }
+    }
+
+}

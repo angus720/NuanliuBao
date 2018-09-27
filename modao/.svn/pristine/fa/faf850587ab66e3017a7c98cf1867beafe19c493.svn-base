@@ -1,0 +1,111 @@
+package nuanliu.com.modao.ui.fragment;
+
+
+import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.view.View;
+import android.widget.ImageView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseFragment;
+import nuanliu.com.modao.ui.activity.EquipmentMonitorActivity;
+import nuanliu.com.modao.ui.activity.FeedbackActivity;
+import nuanliu.com.modao.ui.activity.OnlinePaymentActivity;
+import nuanliu.com.modao.ui.activity.TroubleRepairActivity;
+import nuanliu.com.modao.widget.HomeBanner;
+import nuanliu.com.modao.widget.convenientbanner.ConvenientBanner;
+import nuanliu.com.modao.widget.convenientbanner.holder.CBViewHolderCreator;
+
+/**
+ * 首页Fragment
+ * A simple {@link Fragment} subclass.
+ */
+public class MainHomeFragment extends BaseFragment {
+
+    @BindView(R.id.myhome_banner)
+    ConvenientBanner homeBanner;
+    @BindView(R.id.iv_trouble_repair)
+    ImageView ivTroubleRepair;
+    @BindView(R.id.iv_online_payment)
+    ImageView ivOnlinePayment;
+    @BindView(R.id.iv_equipment_monitor)
+    ImageView ivEquipmentMonitor;
+    @BindView(R.id.iv_feedback)
+    ImageView ivFeedback;
+//    OnButtonClick OnButtonClick;
+    private int[] imgs = new int[]{R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher};
+    private List<Integer> bannerImageId = new ArrayList<>();
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.fragment_main_home;
+    }
+
+    @Override
+    protected void logicalPro() {
+        initView();
+    }
+
+    private void initData() {
+
+    }
+
+    private void initView() {
+        for (int i = 0; i < imgs.length; i++) {
+            bannerImageId.add(imgs[i]);
+        }
+        homeBanner.setCanLoop(true);
+        homeBanner.getViewPager().setOffscreenPageLimit(2);
+        homeBanner.setManualPageable(true);
+        homeBanner.setPages(new CBViewHolderCreator() {
+            @Override
+            public Object createHolder() {
+                return new HomeBanner();
+            }
+        }, bannerImageId)
+                .setPageIndicatorAlign(ConvenientBanner.PageIndicatorAlign.CENTER_HORIZONTAL)
+                .setPageIndicator(new int[]{R.drawable.ic_page_indicator, R.drawable.ic_page_indicator_focused});
+    }
+
+    @OnClick({R.id.iv_trouble_repair, R.id.iv_online_payment, R.id.iv_equipment_monitor, R.id.iv_feedback})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.iv_trouble_repair:
+                startActivity(new Intent(getActivity(), TroubleRepairActivity.class));
+                break;
+            case R.id.iv_online_payment:
+                startActivity(new Intent(getActivity(), OnlinePaymentActivity.class));
+                break;
+            case R.id.iv_equipment_monitor:
+                startActivity(new Intent(getActivity(), EquipmentMonitorActivity.class));
+                break;
+            case R.id.iv_feedback:
+                startActivity(new Intent(getActivity(), FeedbackActivity.class));
+                break;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        homeBanner.startTurning(2000L);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+//    public void setOnButtonClick(OnButtonClick onButtonClick) {
+//        this.OnButtonClick = onButtonClick;
+//    }
+//
+//    public interface OnButtonClick {
+//        void onClick(int index);
+//    }
+}

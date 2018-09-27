@@ -1,0 +1,165 @@
+package nuanliu.com.modao.bean;
+
+import java.util.List;
+
+public class PayRecordListBean extends CommonResponse {
+
+
+    /**
+     * body : {"list":[{"list":[{"id":"","communityName":"临泉小区","amount":100,"time":1526377824000,"title":"附加费交费","payMethod":"xj","bizId":"1234654654","householder":"angus","addre":"jkjlkj"}],"year_s":"2018","amount_t":400}]}
+     */
+
+    private BodyBean body;
+
+    public BodyBean getBody() {
+        return body;
+    }
+
+    public void setBody(BodyBean body) {
+        this.body = body;
+    }
+
+    public static class BodyBean {
+        private List<TotalList> totalLists;
+
+        public List<TotalList> getTotalList() {
+            return totalLists;
+        }
+
+        public void setTotalList(List<TotalList> totalLists) {
+            this.totalLists = totalLists;
+        }
+
+        public static class TotalList {
+            /**
+             * list : [{"id":"","communityName":"临泉小区","amount":100,"time":1526377824000,"title":"附加费交费","payMethod":"xj","bizId":"1234654654","householder":"angus","addre":"jkjlkj"}]
+             * year_s : 2018
+             * amount_t : 400
+             */
+
+            private String year_s;
+            private int amount_t;
+            private List<ListBean> list;
+
+            public String getYear_s() {
+                return year_s;
+            }
+
+            public void setYear_s(String year_s) {
+                this.year_s = year_s;
+            }
+
+            public int getAmount_t() {
+                return amount_t;
+            }
+
+            public void setAmount_t(int amount_t) {
+                this.amount_t = amount_t;
+            }
+
+            public List<ListBean> getList() {
+                return list;
+            }
+
+            public void setList(List<ListBean> list) {
+                this.list = list;
+            }
+
+            public static class ListBean {
+                /**
+                 * id :
+                 * communityName : 临泉小区
+                 * amount : 100
+                 * time : 1526377824000
+                 * title : 附加费交费
+                 * payMethod : xj
+                 * bizId : 1234654654
+                 * householder : angus
+                 * addre : jkjlkj
+                 */
+
+                private String id;
+                private String communityName;
+                private int amount;
+                private long time;
+                private String title;
+                private String payMethod;
+                private String bizId;
+                private String householder;
+                private String addre;
+
+                public String getId() {
+                    return id;
+                }
+
+                public void setId(String id) {
+                    this.id = id;
+                }
+
+                public String getCommunityName() {
+                    return communityName;
+                }
+
+                public void setCommunityName(String communityName) {
+                    this.communityName = communityName;
+                }
+
+                public int getAmount() {
+                    return amount;
+                }
+
+                public void setAmount(int amount) {
+                    this.amount = amount;
+                }
+
+                public long getTime() {
+                    return time;
+                }
+
+                public void setTime(long time) {
+                    this.time = time;
+                }
+
+                public String getTitle() {
+                    return title;
+                }
+
+                public void setTitle(String title) {
+                    this.title = title;
+                }
+
+                public String getPayMethod() {
+                    return payMethod;
+                }
+
+                public void setPayMethod(String payMethod) {
+                    this.payMethod = payMethod;
+                }
+
+                public String getBizId() {
+                    return bizId;
+                }
+
+                public void setBizId(String bizId) {
+                    this.bizId = bizId;
+                }
+
+                public String getHouseholder() {
+                    return householder;
+                }
+
+                public void setHouseholder(String householder) {
+                    this.householder = householder;
+                }
+
+                public String getAddre() {
+                    return addre;
+                }
+
+                public void setAddre(String addre) {
+                    this.addre = addre;
+                }
+            }
+        }
+    }
+}

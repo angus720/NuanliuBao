@@ -1,0 +1,420 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bigkoo.pickerview.builder.TimePickerBuilder;
+import com.bigkoo.pickerview.listener.OnTimeSelectListener;
+import com.bigkoo.pickerview.view.TimePickerView;
+import com.bumptech.glide.Glide;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.global.App;
+import nuanliu.com.modao.ui.adapter.RepairReasonAdapter;
+import nuanliu.com.modao.ui.dialog.ImageStudioDialog;
+import nuanliu.com.modao.utils.PopupwindowUtils;
+import nuanliu.com.modao.utils.StringUtil;
+import nuanliu.com.modao.widget.TouchRelativeLayout;
+import nuanliu.com.modao.widget.luban.Luban;
+import nuanliu.com.modao.widget.luban.OnCompressListener;
+import nuanliu.com.modao.widget.photopicker.PhotoPagerActivity;
+import nuanliu.com.modao.widget.photopicker.PhotoPicker;
+import nuanliu.com.modao.widget.photopicker.PhotoPreview;
+
+/**
+ * 报修单
+ */
+
+public class NewOrderActivity extends BaseActivity {
+
+    @BindView(R.id.tv_order_content)
+    TextView tvOrderContent;
+    @BindView(R.id.et_note)
+    EditText etNote;
+    @BindView(R.id.et_contact)
+    EditText etContact;
+    @BindView(R.id.et_phone)
+    EditText etPhone;
+    @BindView(R.id.tv_address)
+    TextView tvAddress;
+    @BindView(R.id.iv_choose_man)
+    ImageView ivMan;
+    @BindView(R.id.iv_choose_women)
+    ImageView ivWomen;
+    @BindView(R.id.tv_appoint_time)
+    TextView tvAppointTime;
+    @BindView(R.id.iv_one)
+    net.qiujuer.genius.ui.widget.ImageView mIvOne;
+    @BindView(R.id.iv_one_delete)
+    ImageView mIvOneDelete;
+    @BindView(R.id.iv_two_delete)
+    ImageView mIvTwoDelete;
+    @BindView(R.id.iv_two)
+    net.qiujuer.genius.ui.widget.ImageView mIvTwo;
+    @BindView(R.id.iv_three)
+    net.qiujuer.genius.ui.widget.ImageView mIvThree;
+    @BindView(R.id.iv_three_delete)
+    ImageView mIvThreeDelete;
+    @BindView(R.id.ll_two_defalut)
+    LinearLayout mLlTwoDefalut;
+    @BindView(R.id.ll_three_default)
+    LinearLayout mLlThreeDefault;
+    @BindView(R.id.trl_choose_content)
+    TouchRelativeLayout trlChooseContent;
+
+    private PopupWindow mPopupWindow;
+    private ArrayList list = new ArrayList();
+    private ListView reason_list;
+    private RepairReasonAdapter mAdapter;
+    private LinearLayout llBlank;
+    private ImageStudioDialog mIVStudioDialog;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    private List<String> mListPicpath = new ArrayList<>();
+    private List<String> mencodingPic = new ArrayList<>();
+    private String mAddress;
+
+
+    private static final int REQUEST_CODE_REPAIR_ADDRESS = 101;
+    private static final int REQUEST_CODE_PHOTO_PREVIEW = 102;
+    private static final int REQUEST_CAMERA_CODE = 103;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initEvent();
+        checkPermission();
+        initPop();
+        initDate();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_new_order;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("报修单");
+        refreshImageview();
+    }
+
+    private void initEvent() {
+
+        final TextWatcher mTextWatcher = new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        };
+        etNote.addTextChangedListener(mTextWatcher);
+        etNote.setFilters(new InputFilter[]{new InputFilter.LengthFilter(300)});//设置长度
+    }
+
+    @OnClick({R.id.trl_choose_content, R.id.iv_one, R.id.iv_two, R.id.iv_three, R.id.gender_man, R.id.gender_women, R.id.trl_add_address, R.id.trl_appointment_time, R.id.btn_confirm_submit})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.trl_choose_content:
+                if (mPopupWindow.isShowing()) {
+                    mPopupWindow.dismiss();
+                } else {
+                    PopupwindowUtils.showAsDropDown(trlChooseContent, mPopupWindow);
+                }
+                break;
+            case R.id.iv_one:
+                pictureClick(1, "imone.jpg");
+                break;
+            case R.id.iv_two:
+                pictureClick(2, "imTwo.jpg");
+                break;
+            case R.id.iv_three:
+                pictureClick(3, "imthree.jpg");
+                break;
+            case R.id.gender_man:
+                changeImage(ivMan, ivWomen);
+                break;
+            case R.id.gender_women:
+                changeImage(ivWomen, ivMan);
+                break;
+            case R.id.trl_add_address:
+                Intent intent = new Intent(this, RepairAddressActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_REPAIR_ADDRESS);
+                break;
+            case R.id.trl_appointment_time:
+                showTime();
+                break;
+            case R.id.btn_confirm_submit:
+                break;
+        }
+    }
+
+    private void initPop() {
+        View view = LayoutInflater.from(this).inflate(R.layout.popup_order_reason_select, null);
+        mAdapter = new RepairReasonAdapter(this, list);
+        reason_list = (ListView) view.findViewById(R.id.reason_list);
+        llBlank = (LinearLayout) view.findViewById(R.id.ll_blank);
+        reason_list.setAdapter(mAdapter);
+        mPopupWindow = new PopupWindow(view,
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        mPopupWindow.setOutsideTouchable(true);
+        mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
+        mPopupWindow.setFocusable(true);
+        mPopupWindow.setContentView(view);
+
+        reason_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                tvOrderContent.setText(list.get(position) + "");
+                mPopupWindow.dismiss();
+            }
+        });
+        llBlank.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPopupWindow.dismiss();
+            }
+        });
+    }
+
+    private void initDate() {
+        list.add("暖气不暖");
+        list.add("漏电");
+        list.add("漏水");
+    }
+
+    private void showTime() {
+        Calendar selectedDate = Calendar.getInstance();
+        Calendar startDate = Calendar.getInstance();
+        startDate.set(2018, 1, 1);//设置起始年份
+        Calendar endDate = Calendar.getInstance();
+        endDate.set(2030, 1, 1);//设置结束年份
+        TimePickerView pvTime = new TimePickerBuilder(this, new OnTimeSelectListener() {
+            @Override
+            public void onTimeSelect(Date date, View v) {
+                String format = simpleDateFormat.format(date);
+                if (date.getTime() >= new Date().getTime()) {
+                    tvAppointTime.setText(format);
+                } else {
+                    Toast.makeText(NewOrderActivity.this, "请重新设置时间", Toast.LENGTH_SHORT).show();
+                }
+            }
+        })
+                .setCancelText("取消")//取消按钮文字
+                .setSubmitText("确定")//确认按钮文字
+                .setContentTextSize(18)//滚轮文字大小
+                .setTitleSize(20)//标题文字大小
+                .setTitleText("选择时间")//标题文字
+                .setOutSideCancelable(true)//点击屏幕，点在控件外部范围时，是否取消显示
+                .isCyclic(true)//是否循环滚动
+                .setTitleColor(R.color.black)//标题文字颜色
+                .setSubmitColor(R.color.black)//确定按钮文字颜色
+                .setCancelColor(R.color.black)//取消按钮文字颜色
+//                .setTitleBgColor(R.color.white)//标题背景颜色 Night mode
+//                .setBgColor(R.color.white)//滚轮背景颜色 Night mode
+//                .setRange(calendar.get(Calendar.YEAR) - 20, calendar.get(Calendar.YEAR) + 20)//默认是1900-2100年
+                .setDate(selectedDate)// 如果不设置的话，默认是系统时间*/
+                .setRangDate(startDate, endDate)//起始终止年月日设定
+//                .setLabel("年", "月", "日", "时", "分", "秒")
+                .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
+                .build();
+        pvTime.show();
+    }
+
+    private void changeImage(ImageView iv1, ImageView iv2) {
+        iv1.setImageResource(R.mipmap.pay_choose);
+        iv2.setImageResource(R.mipmap.pay_unchoose);
+    }
+
+    /**
+     * 图片点击
+     *
+     * @param number
+     * @param name
+     */
+    private void pictureClick(int number, String name) {
+
+        if (mListPicpath.size() >= number) {
+
+            //预览+加删除
+            Intent intent = new Intent(this, PhotoPagerActivity.class);
+            intent.putExtra(PhotoPreview.EXTRA_CURRENT_ITEM, number - 1);
+            intent.putStringArrayListExtra(PhotoPreview.EXTRA_PHOTOS, (ArrayList<String>) mListPicpath);
+            intent.putExtra(PhotoPreview.EXTRA_SHOW_DELETE, true);
+            startActivityForResult(intent, REQUEST_CODE_PHOTO_PREVIEW);
+        } else {
+            mIVStudioDialog = ImageStudioDialog.newInstance(name, false, 3 - mListPicpath.size());
+            mIVStudioDialog.show(getSupportFragmentManager(), name, new ImageStudioDialog.Callback() {
+                @Override
+                public void callback(List<String> list) {
+                    mListPicpath.addAll(list);
+                    refreshImageview();
+                }
+            });
+        }
+    }
+
+    /**
+     * 压缩图片
+     *
+     * @param path
+     */
+    private void compresspic(String path) {
+
+        Luban.with(this)
+                .load(path)
+                .ignoreBy(100)
+                .setCompressListener(new OnCompressListener() {
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onSuccess(File file) {
+                        String picEncodingToString = StringUtil.encodeBase64File(file);
+                        mencodingPic.add(picEncodingToString);
+                        if (mencodingPic.size() == mListPicpath.size()) {
+//                            uploadPic(mencodingPic);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                }).launch();
+    }
+
+
+    private void refreshImageview() {
+
+        mIvOne.setVisibility(View.VISIBLE);
+        mIvTwo.setVisibility(mListPicpath.size() >= 1 ? View.VISIBLE : View.GONE);
+        mLlTwoDefalut.setVisibility(mListPicpath.size() >= 1 ? View.VISIBLE : View.GONE);
+        mIvThree.setVisibility(mListPicpath.size() >= 2 ? View.VISIBLE : View.GONE);
+        mLlThreeDefault.setVisibility(mListPicpath.size() >= 2 ? View.VISIBLE : View.GONE);
+
+        switch (mListPicpath.size()) {
+            case 0:
+                mIvOne.setImageBitmap(null);
+                mIvTwo.setImageBitmap(null);
+                mIvThree.setImageBitmap(null);
+                break;
+            case 1:
+                Glide.with(this).load(mListPicpath.get(0)).into(mIvOne);
+                mIvTwo.setImageBitmap(null);
+                mIvThree.setImageBitmap(null);
+                break;
+            case 2:
+                Glide.with(this).load(mListPicpath.get(0)).into(mIvOne);
+                Glide.with(this).load(mListPicpath.get(1)).into(mIvTwo);
+                mIvThree.setImageBitmap(null);
+                break;
+            case 3:
+                Glide.with(this).load(mListPicpath.get(0)).into(mIvOne);
+                Glide.with(this).load(mListPicpath.get(1)).into(mIvTwo);
+                Glide.with(this).load(mListPicpath.get(2)).into(mIvThree);
+                break;
+        }
+    }
+
+    private void checkPermission() {
+        //相机
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                //进入到这里代表没有权限.
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                    //已经禁止提示了
+                    Toast.makeText(App.getContext(), "您已禁止该权限，需要重新开启。", Toast.LENGTH_SHORT).show();
+                } else {
+                    ActivityCompat.requestPermissions(NewOrderActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_CODE);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case PhotoPicker.REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        mListPicpath.addAll(data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS));
+                        refreshImageview();
+                    }
+                }
+                break;
+            case REQUEST_CODE_PHOTO_PREVIEW:
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        mListPicpath.clear();
+                        mListPicpath.addAll(data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS));
+                        refreshImageview();
+                    }
+                }
+                break;
+            case REQUEST_CODE_REPAIR_ADDRESS:
+                if (resultCode == RESULT_OK) {
+                    if (data.hasExtra(Fields.CHOOSE_ADDRESS)) {
+                        mAddress = data.getStringExtra(Fields.CHOOSE_ADDRESS);
+                        tvAddress.setText(mAddress);
+                    }
+                }
+                break;
+        }
+    }
+
+    /**
+     * 提交后清空
+     */
+    private void clearViewData() {
+        etNote.setText("");
+        etContact.setText("");
+        etPhone.setText("");
+        tvAppointTime.setText("预约时间");
+        tvAddress.setText("请添加地址");
+    }
+}

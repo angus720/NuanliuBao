@@ -1,0 +1,139 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.base.BaseResponse;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.ui.dialog.AppDialog;
+import nuanliu.com.modao.utils.SpUtil;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * 地址绑定
+ */
+
+public class AddressBindActivity extends BaseActivity {
+
+    @BindView(R.id.et_owner_name)
+    EditText etOwnerName;
+    @BindView(R.id.et_owner_number)
+    EditText etOwnerNumber;
+    @BindView(R.id.tv_company_name)
+    TextView tvCompanyName;
+
+    private AppDialog appDialog;
+
+    private static final int REQUEST_HEAT_COMPANY = 100;
+
+    private String mCompanyName;
+    private String mCompanyId;
+    private String mOwnerName;
+    private String mOwnerNumber;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_address_bind;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("地址绑定");
+    }
+
+    private void initData() {
+        mOwnerName = etOwnerName.getText().toString().trim() + "";
+        mOwnerNumber = etOwnerNumber.getText().toString().trim() + "";
+    }
+
+    @OnClick({R.id.trl_choose_company, R.id.tv_find_number, R.id.btn_address_bind})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            //选择供热公司
+            case R.id.trl_choose_company:
+                Intent intent = new Intent(this, ChooseCompanyActivity.class);
+                startActivityForResult(intent, REQUEST_HEAT_COMPANY);
+                break;
+            case R.id.tv_find_number:
+                appDialog = new AppDialog(AddressBindActivity.this).builder()
+                        .setTitle(getResources().getString(R.string.how_know_card_number))
+                        .setMsg(getResources().getString(R.string.card_number_detail))
+                        .setPositiveButton("知道了", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+                appDialog.show();
+                break;
+            case R.id.btn_address_bind:
+                initData();
+                bdHouse(SpUtil.getUser().getUsername(), SpUtil.getUser().getTelphone(), mCompanyId, mOwnerName, mOwnerNumber);
+                break;
+        }
+    }
+
+    private void bdHouse(String userName, String telPhone, String companyId, String houseHolder, String account_h) {
+        ServiceFactory
+                .getApis()
+                .bdHouse(userName, telPhone, companyId, houseHolder, account_h)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<BaseResponse>bindToLifecycle())
+                .subscribe(new Subscriber<BaseResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+                        if (baseResponse.getStatus() == 1) {
+                            Toast.makeText(AddressBindActivity.this, "绑定成功", Toast.LENGTH_SHORT).show();
+//                        IntentUtils.startActivity(AddressBindActivity.this, OnlinePaymentActivity.class);
+                        } else {
+                            Toast.makeText(AddressBindActivity.this, "绑定失败", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_HEAT_COMPANY:
+                if (resultCode == RESULT_OK) {
+                    if (data.hasExtra(Fields.CHOOSE_COMPANY)) {
+                        mCompanyName = data.getStringExtra(Fields.CHOOSE_COMPANY);
+                        tvCompanyName.setText(mCompanyName);
+                    }
+                    if (data.hasExtra(Fields.COMPANY_ID)) {
+                        mCompanyId = data.getStringExtra(Fields.COMPANY_ID);
+                    }
+                }
+                break;
+        }
+    }
+}

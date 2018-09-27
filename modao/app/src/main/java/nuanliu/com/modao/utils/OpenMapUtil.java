@@ -1,0 +1,81 @@
+package nuanliu.com.modao.utils;
+
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.widget.Toast;
+
+import java.net.URISyntaxException;
+
+import nuanliu.com.modao.global.App;
+
+/**
+ * @创建者 SoleJoke
+ * @创建时间 on 2017-12-27
+ * @描述
+ * @更新者 　$Author
+ * @更新时间 　2017-12-27
+ * @更新描述　　${ToDo}
+ */
+
+public class OpenMapUtil {
+
+
+    public static  void openTencentMap(Context context, String lat, String lon) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+
+        Uri uri = Uri.parse("qqmap://map/routeplan?type=drive&to=维修师傅位置&tocoord=" + lat + "," + lon);
+        intent.setData(uri);
+        ComponentName componentName = intent.resolveActivity(App.getContext().getPackageManager());
+        if (intent.resolveActivity(App.getContext().getPackageManager()) != null) {
+            context.startActivity(intent);
+        } else {
+            Toast.makeText(App.getContext(), "您尚未安装腾讯地图", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    public static  void openBaiduMap(Context context, String lat, String lon) {
+        if (IntentUtils.isAvilible(context, "com.baidu.BaiduMap")) {
+            try {
+                Intent intent = Intent.getIntent("intent://map/direction?" +
+                        "destination=latlng:" + lat + "," + lon + "|name:维修师傅位置" +        //终点
+                        "&mode=driving&" +          //导航路线方式
+                        "&src=appname#Intent;scheme=bdapp;package=com.baidu.BaiduMap;end");
+                context.startActivity(intent); //启动调用
+            } catch (URISyntaxException e) {
+            }
+        } else {
+            Toast.makeText(App.getContext(), "您尚未安装百度地图", Toast.LENGTH_LONG).show();
+            Uri uri = Uri.parse("market://details?id=com.baidu.BaiduMap");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            //            if (intent.resolveActivity(getPackageManager()) != null) {
+            //                startActivity(intent);
+            //            }
+        }
+    }
+
+
+    public static void openGaodeMap(Context context, String lat, String lon) {
+        if (IntentUtils.isAvilible(context, "com.autonavi.minimap")) {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+
+            Uri uri = Uri.parse("amapuri://route/plan/?did=BGVIS2&dlat="+lat+"&dlon="+lon+"&dname=维修师傅位置&dev=0&t=0");
+            intent.setData(uri);
+
+            context.startActivity(intent);
+        } else {
+            Toast.makeText(App.getContext(), "您尚未安装高德地图", Toast.LENGTH_LONG).show();
+            Uri uri = Uri.parse("market://details?id=com.autonavi.minimap");
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            //            if (intent.resolveActivity(getPackageManager()) != null) {
+            //                context.startActivity(intent);
+            //            }
+        }
+    }
+}

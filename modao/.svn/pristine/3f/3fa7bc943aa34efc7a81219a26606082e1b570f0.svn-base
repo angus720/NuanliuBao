@@ -1,0 +1,104 @@
+<resources>
+    <string name="app_name">暖流宝</string>
+    <string name="company_name">暖流科技</string>
+    <string name="forget_password">忘记密码？</string>
+    <string name="no_account">没有账号，</string>
+    <string name="register">立即注册</string>
+    <string name="server_phone">010-53388531</string>
+    <string name="payment_record">缴费记录</string>
+    <string name="warm_prompt">温馨提示</string>
+    <string name="prompt_message">当前账号已冻结，系统暂不支持缴费，请立即到营业厅办理。</string>
+    <string name="how_know_card_number">怎样知道我家的用户卡号？</string>
+    <string name="card_number_detail">用户卡号是一个16位的数字编码，您可以从与热力公司签署的供热合同、往年缴费收据、发票以及用户信息服务卡中查到</string>
+    <string name="invoice_tip">说明：电子发票预计需要3个工作日左右开具完成，开具后会给您填写的手机号发短信通知，务必保证手机号填写正确。</string>
+    <string name="feedback">欢迎提出您的宝贵意见、建议，我们将不断完善，为您提供更优质的产品体验和服务！</string>
+    <string name="bind_tip">\t\t\t\t地址绑定和在线缴费功能，只面向北京暖流科技公司的居民热用户，非本公司用户，请联系您的供热服务单位进行缴费。</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="xrefreshview_header_hint_normal">下拉刷新</string>
+    <string name="xrefreshview_header_hint_ready">松开刷新数据</string>
+    <string name="xrefreshview_header_hint_refreshing">正在刷新...</string>
+    <string name="xrefreshview_header_hint_loading">正在加载...</string>
+    <string name="xrefreshview_header_hint_loaded">加载完成</string>
+    <string name="xrefreshview_header_hint_loaded_fail">加载失败</string>
+    <string name="xrefreshview_header_last_time">上次更新时间：</string>
+    <string name="xrefreshview_footer_hint_normal">加载完成</string>
+    <string name="xrefreshview_footer_hint_fail">加载失败，请重试</string>
+    <string name="xrefreshview_footer_hint_complete">已无更多数据</string>
+    <string name="xrefreshview_footer_hint_click">点击加载更多</string>
+    <string name="xrefreshview_footer_hint_release">松开加载更多</string>
+    <string name="xrefreshview_footer_hint_ready">松开载入更多</string>
+    <string name="xrefreshview_never_refresh">从未刷新</string>
+    <string name="xrefreshview_refresh_justnow">刚刚刷新</string>
+    <string name="xrefreshview_refresh_minutes_ago">%1s分钟之前刷新</string>
+    <string name="xrefreshview_refresh_hours_ago">%1s小时之前刷新</string>
+    <string name="xrefreshview_refresh_days_ago">%1s天之前刷新</string>
+
+    <string name="agreement">尊敬的用户：\n\t\t您好！\n
+    感谢您安装“暖流宝”手机应用软件，“暖流宝”软件属于北京暖流科技有限公司（以下简称“暖流科技”）开发的电子应用软件。用于受理用户的故障报修、投诉建议、在线缴费等诉求，同时提供实时便捷的供热通知公告、室内温湿度监测服务（需安装室内温湿度监测仪）。请您仔细阅读本协议，暖流科技将依据以下条件和条款为您提供服务：\n\n
+
+一、定义\n
+    \t\t1、本软件：指暖流科技“暖流宝”软件。\n
+    \t\t2、用户/您：指同意并遵守本协议，使用软件的注册流程注册并使用本软件的自然人。\n
+    \t\t3、用户信息：指用户注册资料及用户使用本软件时所提交的个人信息。\n\n
+
+二、协议条款的确认和接受\n
+    \t\t1、请您在注册前务必认真阅读本协议，如您对本协议的任何条款和/或将来的修改、补充条款有异议，您可选择不注册。\n
+    \t\t2、当您点选“完成”注册按钮，即视同您已阅读并且同意接受本协议的所有条款，接受本软件对本协议条款随时所做的任何修改，并愿受其约束。\n
+    \t\t3、暖流科技有权根据国家法律法规的更新、产品和服务规则的调整修改本协议条款，协议条款发生变化后，会以明确的方式进行提示。如您继续使用本软件，则视同您接受经修订的协议条款。\n
+    \t\t4、暖流科技保留在任何时候自行决定对软件及其相关功能的升级、修改、转移的权利，除非另有说明，上述所有功能、服务仍适用于本协议。\n\n
+
+三、服务内容\n
+    \t\t1、暖流科技将按照本协议为用户提供服务，保证所提供服务的合法性，维护整个服务及交易的正常运行。\n
+    \t\t2、暖流科技所提供的用户服务包括：故障报修、在线缴费、设备监测、意见反馈、通知公告等，暖流科技有权根据实际情况调整服务内容。\n
+    \t\t3、暖流科技仅提供网络服务，与网络服务有关的通信设备及通信服务所需的费用由用户自行承担。\n\n
+
+四、使用规则\n
+    \t\t1、用户资料的真实性：用户应保证在注册时填写数据的真实性、正确性及完整性，若用户提供任何错误、不实、过期或不完整的资料，并为暖流科技所确知；或者暖流科技有合理理由怀疑前述资料为错误、不实、过期或不完整，暖流科技有权暂停或终止用户的账号，并拒绝其现在或将来使用本软件服务的部分或全部。
+    暖流科技有权对用户的注册数据及相关操作进行查阅，发现注册数据或相关操作中存在任何问题或怀疑时，有权向用户发出询问及要求改正的通知或者直接作删除等处理。\n
+    \t\t2、用户账号、密码\n
+    用户注册的账号及密码为用户在本软件的唯一身份认证，您必须按要求输入正确的账号和密码，才可以使用本软件提供的用户服务。
+    您应对您的账户和密码的安全，以及对通过您的账户和密码实施的行为负责。非因暖流科技和本软件的原因导致用户账号、密码遗失、遗忘或被他人窃取的，本软件及暖流科技不承担任何责任。\n
+    \t\t3、您在使用本软件提供的服务过程中，必须遵守以下原则：\n
+        \t\t\ta、遵守中华人民共和国法律、法规；\n
+        \t\t\tb、遵守所有与网络服务有关的网络协议、规定和程序；\n
+        \t\t\tc、不得为任何非法目的使用本软件所提供的网络服务；\n
+        \t\t\td、禁止出售、转售或复制、开发本软件授予的使用权限；\n
+        \t\t\te、禁止基于商业目的模仿暖流科技的产品和服务；\n
+        \t\t\tf、禁止复制和模仿暖流科技及本软件的设计理念、界面、功能、图表、文档、商标、设计、图像、音像、摄影、动画以及软件等内容；\n
+        \t\t\tg、禁止发送违反国家宪法、法律、信息产业行业、暖流科技相关规定的信息，包括但不限于带有病毒、木马、蠕虫及其他有害内容的代码、文件、脚本和程序；\n
+        \t\t\th、未经暖流科技许可，禁止基于本软件所提供的服务或内容进行修改或制造其他产品；\n
+        \t\t\ti、不得利用本软件进行任何危害计算机网络安全的行为；不得修改或伪造软件作品运行中的指令、数据、数据包，增加、删减、变动软件的功能或运行效果；\n
+        \t\t\tj、不得利用本软件传输任何非法、有害、胁迫、骚扰、侵害、中伤、粗俗、猥亵、诽谤、淫秽、侵害他人隐私、种族歧视或其他令人不快的内容，包括但不限于文字、软件、音乐、照片、图形、视频等；\n
+        \t\t\tk、不得以任何方式危害未成年人；\n
+        \t\t\tl、不得利用本软件进行干扰暖流科技用户服务、通信服务及其他用户正常使用的行为；\n
+        \t\t\tm、不得蓄意诋毁暖流科技的声誉或恶意攻击本软件系统；\n
+        \t\t\t4、用户承诺其通过本软件进行活动引发的一切后果，由其承担全部责任。如因用户使用本软件的行为，导致暖流科技为此承担了相关责任，用户必须全额赔偿暖流科技的相关费用和损失。\n\n
+
+五、客户隐私\n
+        \t\t1、暖流科技保证不对外公开或向第三方提供用户信息。\n
+        \t\t2、您了解并同意，暖流科技有权应政府管理部门（包括司法及行政）的要求，向其提供用户信息。\n
+        \t\t3、暖流科技有权对整个用户数据库进行分析和利用。\n
+        \t\t4、暖流科技为系统建立了完善的安全体系，并尽力保证用户数据不被泄露。用户了解并同意，因技术手段的不断更新，暖流科技无法杜绝全部的安全隐患。\n\n
+
+六、服务变更、终止\n
+        \t\t1、因系统维护或升级需要而暂停网络服务时，暖流科技将尽可能事先发布通知。\n
+        \t\t2、暖流科技有权判定用户的行为是否符合本协议的要求，暖流科技有权单方在不作通知的情况下终止对不符合要求的用户提供服务，由此产生的风险及责任由用户自行承担。如造成暖流科技损失的，用户应承担赔偿责任。\n
+        \t\t3、用户完成本软件的注销手续时，本协议即为终止。\n
+        \t\t4、本协议的终止并不意味着终止已经发生的未完成用户指令的撤销，也不能消除因终止前的交易所带来的法律后果。\n
+        \t\t5、暖流科技保留在不事先通知用户的情况下中断或终止部分或全部服务的权利，对所有服务的中断或终止而造成的任何损失，暖流科技无需对用户或任何第三方承担任何责任。\n\n
+
+七、免责声明\n
+    \t\t1、暖流科技尽力向用户提供优质服务，但不能保证用户服务一定满足用户要求，也不保证用户服务不会中断。\n
+    \t\t2、暖流科技所发布的信息可能不是业务有关的最新信息，仅供用户参考。\n
+    \t\t3、用户明确同意使用本软件服务所存在的风险，以及因使用本服务所产生的一切后果，完全由用户自己承担。\n
+    \t\t4、在本协议所适用的法律范围内，任何一方均无须就数据的丢失或损坏及任何间接的、附带的、特殊的、后果性的损失向另一方进行赔偿。\n
+    \t\t5、由于黑客攻击、政府管制、网络通讯瘫痪、地震、火灾等不可预见的事件导致的服务终止等一切后果，暖流科技无需承担任何责任。\n\n
+
+八、法律适用\n
+    本协议适用中华人民共和国国家宪法和法律法规。如果本协议的部分条款因国家法律变更的原因导致在任何时候变成不合法或无效，本协议的其它条款不受影响。\n</string>
+
+</resources>

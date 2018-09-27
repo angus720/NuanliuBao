@@ -1,0 +1,393 @@
+package com.nuanliu.finme.bean;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Deity on 2016/12/15.
+ */
+
+public class LoginBean  implements Parcelable {
+
+    /**
+     */
+
+    private AdminBean admin;
+
+    public AdminBean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(AdminBean admin) {
+        this.admin = admin;
+    }
+
+
+    public static class AdminBean implements Parcelable {
+        /**
+         * account : sjz
+         * alarms : 3
+         * companyName : 石家庄合作公司
+         * companyid : 1
+         * name : 公司最高管理员
+         * passwd : 1
+         */
+
+        private String account;
+        private int                alarms;
+        private String             companyName;
+        private String                companyid;
+        private String             name;
+        private String             passwd;
+
+        private List<ProjectsBean> projects;
+        private List<PermissionsBean> permissions;
+
+        public List<PermissionsBean> getPermissions() {
+            return permissions;
+        }
+
+        public void setPermissions(List<PermissionsBean> permissions) {
+            this.permissions = permissions;
+        }
+
+        public String getUserid() {
+            return userid;
+        }
+
+        public void setUserid(String userid) {
+            this.userid = userid;
+        }
+
+        private String userid;
+
+        public String getAccount() {
+            return account;
+        }
+
+        public void setAccount(String account) {
+            this.account = account;
+        }
+
+        public int getAlarms() {
+            return alarms;
+        }
+
+        public void setAlarms(int alarms) {
+            this.alarms = alarms;
+        }
+
+        public String getCompanyName() {
+            return companyName;
+        }
+
+        public void setCompanyName(String companyName) {
+            this.companyName = companyName;
+        }
+
+        public String getCompanyid() {
+            return companyid;
+        }
+
+        public void setCompanyid(String companyid) {
+            this.companyid = companyid;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getPasswd() {
+            return passwd;
+        }
+
+        public void setPasswd(String passwd) {
+            this.passwd = passwd;
+        }
+
+        public List<ProjectsBean> getProjects() {
+            return projects;
+        }
+
+        public void setProjects(List<ProjectsBean> projects) {
+            this.projects = projects;
+        }
+
+        public static class PermissionsBean {
+            /**
+             * name : APP实时数据
+             * opt : true
+             * url :
+             */
+
+            private String name;
+            private boolean opt;
+            private String  url;
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public boolean isOpt() {
+                return opt;
+            }
+
+            public void setOpt(boolean opt) {
+                this.opt = opt;
+            }
+
+            public String getUrl() {
+                return url;
+            }
+
+            public void setUrl(String url) {
+                this.url = url;
+            }
+        }
+
+        public static class ProjectsBean implements Parcelable {
+            /**
+             * area : 151338.54
+             * buildings : 10
+             * city : 石家庄市
+             * district : 市辖区
+             * heatingEndDay :
+             * heatingStartDay :
+             * id : p25t7kvn60
+             * name : 紫晶悦城9#
+             * province : 河北省
+             */
+
+            private double area;
+            private int    buildings;
+            private String city;
+            private String district;
+            private String heatingEndDay;
+            private String heatingStartDay;
+            private String id;
+            private String name;
+            private String province;
+            private String lat;
+            private String lng;
+
+            public String getLat() {
+                return lat;
+            }
+
+            public void setLat(String lat) {
+                this.lat = lat;
+            }
+
+            public String getLng() {
+                return lng;
+            }
+
+            public void setLng(String lng) {
+                this.lng = lng;
+            }
+
+            public double getArea() {
+                return area;
+            }
+
+            public void setArea(double area) {
+                this.area = area;
+            }
+
+            public int getBuildings() {
+                return buildings;
+            }
+
+            public void setBuildings(int buildings) {
+                this.buildings = buildings;
+            }
+
+            public String getCity() {
+                return city;
+            }
+
+            public void setCity(String city) {
+                this.city = city;
+            }
+
+            public String getDistrict() {
+                return district;
+            }
+
+            public void setDistrict(String district) {
+                this.district = district;
+            }
+
+            public String getHeatingEndDay() {
+                return heatingEndDay;
+            }
+
+            public void setHeatingEndDay(String heatingEndDay) {
+                this.heatingEndDay = heatingEndDay;
+            }
+
+            public String getHeatingStartDay() {
+                return heatingStartDay;
+            }
+
+            public void setHeatingStartDay(String heatingStartDay) {
+                this.heatingStartDay = heatingStartDay;
+            }
+
+            public String getId() {
+                return id;
+            }
+
+            public void setId(String id) {
+                this.id = id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getProvince() {
+                return province;
+            }
+
+            public void setProvince(String province) {
+                this.province = province;
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+                dest.writeDouble(this.area);
+                dest.writeInt(this.buildings);
+                dest.writeString(this.city);
+                dest.writeString(this.district);
+                dest.writeString(this.heatingEndDay);
+                dest.writeString(this.heatingStartDay);
+                dest.writeString(this.id);
+                dest.writeString(this.name);
+                dest.writeString(this.province);
+            }
+
+            public ProjectsBean() {
+            }
+
+            protected ProjectsBean(Parcel in) {
+                this.area = in.readDouble();
+                this.buildings = in.readInt();
+                this.city = in.readString();
+                this.district = in.readString();
+                this.heatingEndDay = in.readString();
+                this.heatingStartDay = in.readString();
+                this.id = in.readString();
+                this.name = in.readString();
+                this.province = in.readString();
+            }
+
+            public static final Parcelable.Creator<ProjectsBean> CREATOR = new Parcelable.Creator<ProjectsBean>() {
+                @Override
+                public ProjectsBean createFromParcel(Parcel source) {
+                    return new ProjectsBean(source);
+                }
+
+                @Override
+                public ProjectsBean[] newArray(int size) {
+                    return new ProjectsBean[size];
+                }
+            };
+        }
+
+        public AdminBean () {
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.account);
+            dest.writeInt(this.alarms);
+            dest.writeString(this.companyName);
+            dest.writeString(this.companyid);
+            dest.writeString(this.name);
+            dest.writeString(this.passwd);
+            dest.writeTypedList(this.projects);
+            dest.writeList(this.permissions);
+            dest.writeString(this.userid);
+        }
+
+        protected AdminBean(Parcel in) {
+            this.account = in.readString();
+            this.alarms = in.readInt();
+            this.companyName = in.readString();
+            this.companyid = in.readString();
+            this.name = in.readString();
+            this.passwd = in.readString();
+            this.projects = in.createTypedArrayList(ProjectsBean.CREATOR);
+            this.permissions = new ArrayList<PermissionsBean>();
+            in.readList(this.permissions, PermissionsBean.class.getClassLoader());
+            this.userid = in.readString();
+        }
+
+        public static final Creator<AdminBean> CREATOR = new Creator<AdminBean>() {
+            @Override
+            public AdminBean createFromParcel(Parcel source) {
+                return new AdminBean(source);
+            }
+
+            @Override
+            public AdminBean[] newArray(int size) {
+                return new AdminBean[size];
+            }
+        };
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.admin, flags);
+    }
+
+    public LoginBean() {
+    }
+
+    protected LoginBean(Parcel in) {
+        this.admin = in.readParcelable(AdminBean.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<LoginBean> CREATOR = new Parcelable.Creator<LoginBean>() {
+        @Override
+        public LoginBean createFromParcel(Parcel source) {
+            return new LoginBean(source);
+        }
+
+        @Override
+        public LoginBean[] newArray(int size) {
+            return new LoginBean[size];
+        }
+    };
+}

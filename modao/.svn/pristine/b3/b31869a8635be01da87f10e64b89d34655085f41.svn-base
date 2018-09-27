@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_splash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/splash_img">
+    <!---->
+    <include layout="@layout/head_toolbar" android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_skip"
+        android:text="跳过3秒"
+        android:textColor="@color/selector_charactercolor_white_orange"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_rectangular_skip"/>
+
+    <!--<ImageView-->
+        <!--android:layout_width="90dp"-->
+        <!--android:layout_height="90dp"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:src="@mipmap/ic_launcher"/>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_below="@id/tv_skip"-->
+        <!--android:layout_marginTop="300px"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="400dp"-->
+        <!--android:gravity="center">-->
+        <!--<nuanliu.com.modao.widget.LoginWaveView-->
+            <!--android:id="@+id/waveview"-->
+            <!--android:layout_width="800px"-->
+            <!--android:layout_height="match_parent"-->
+            <!--app:waveRes="@drawable/wave"-->
+            <!--app:patternRes="@mipmap/ic_launcher"/>-->
+
+    <!--</LinearLayout>-->
+
+</RelativeLayout>

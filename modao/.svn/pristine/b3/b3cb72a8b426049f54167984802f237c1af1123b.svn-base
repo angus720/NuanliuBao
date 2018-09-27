@@ -1,0 +1,40 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.view.View;
+
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+
+/**
+ * 支付成功
+ */
+
+public class PaySuccessActivity extends BaseActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_pay_success;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("支付成功");
+    }
+
+    @OnClick({R.id.btn_complete, R.id.btn_view_order})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_complete:
+                break;
+            case R.id.btn_view_order:
+                break;
+        }
+    }
+}

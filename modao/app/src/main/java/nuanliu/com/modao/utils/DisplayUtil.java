@@ -1,0 +1,88 @@
+package nuanliu.com.modao.utils;
+
+import android.content.Context;
+import android.graphics.Point;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+
+public class DisplayUtil {
+
+	/**
+	 * dip--->px  保证尺寸大小不变
+	 * @param context
+	 * @param dipValue
+	 */
+	public static int dip2px(Context context, float dipValue) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dipValue * scale + 0.5f);
+	}
+
+	/**
+	 * px--->dip   保证尺寸大小不变
+	 * @param context
+	 * @param pxValue
+	 */
+	public static int px2dip(Context context, float pxValue) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (pxValue / scale + 0.5f);
+	}
+
+	/**
+	 * px值转换成sp ，保证文字大小不变
+	 * @param context
+	 * @param pxVale
+     * @return
+     */
+	public static int px2sp(Context context,float pxVale) {
+		final  float fontScanle = context.getResources().getDisplayMetrics().scaledDensity;
+		return (int)(pxVale/fontScanle+0.5f);
+	}
+
+	/**
+	 * sp值转换成px ，保证文字大小不变
+	 * @param context
+	 * @param spVale
+	 * @return
+	 */
+	public static int sp2px(Context context,float spVale) {
+		final  float fontScanle = context.getResources().getDisplayMetrics().scaledDensity;
+		return (int)(spVale*fontScanle+0.5f);
+	}
+
+
+
+	/**
+	 * 获取屏幕宽度和高度，单位为px
+	 */
+	public static Point getScreenMetrics(Context context) {
+		DisplayMetrics dm = context.getResources().getDisplayMetrics();
+		int w_screen = dm.widthPixels;
+		int h_screen = dm.heightPixels;
+		return new Point(w_screen, h_screen);
+
+	}
+
+	/**
+	 * 获取屏幕长宽比
+	 */
+	public static float getScreenRate(Context context) {
+		Point P = getScreenMetrics(context);
+		float H = P.y;
+		float W = P.x;
+		return (H / W);
+	}
+
+	/**
+	 * 转换得到指定类型的value的float大小
+	 * @param type
+	 * @param originalvalue
+	 * @param context
+	 * @return
+	 */
+	public static float getDimmenValue(int type,int originalvalue,Context context) {
+//		int complexUnitDip = TypedValue.COMPLEX_UNIT_DIP;
+		float value =  TypedValue.applyDimension(type, originalvalue, context.getResources().getDisplayMetrics());
+		return value;
+	}
+
+}

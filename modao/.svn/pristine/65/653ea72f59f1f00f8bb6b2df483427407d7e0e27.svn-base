@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ef8200</color>
+    <color name="colorPrimaryDark">#ef8200</color>
+    <color name="colorAccent">#ef8200</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="orange">#ef8200</color>
+    <color name="red">#EB0E09</color>
+    <color name="gray">#e5e5e5</color>
+    <color name="gray_bg">#eeeeee</color>
+
+
+    <!--窗口背景色灰色-->
+    <color name="windowbg">#EEEEEE</color>
+
+    <!--字体灰色-->
+    <color name="charactergray">#666666</color>
+    <color name="characterdarkgray">#333333</color>
+    <color name="charactertintgray">#999999</color>
+
+    <!--字体蓝色-->
+    <color name="characterblue">#339DFF</color>
+
+    <!--字体黑色-->
+    <color name="black">#333333</color>
+
+    <color name="transparent">#00ffffff</color>
+
+    <color name="switchbuttocheck">#33AF35</color>
+
+    <!--对话框-->
+    <color name="dialog_text_color">#5e5d5d</color>
+    <color name="dialog_press_color">#FFF5F4F4</color>
+    <color name="avater_dialog_text_color">#077eff</color>
+</resources>

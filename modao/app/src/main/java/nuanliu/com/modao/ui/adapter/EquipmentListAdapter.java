@@ -1,0 +1,91 @@
+package nuanliu.com.modao.ui.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.bean.DeviceItemBean;
+import nuanliu.com.modao.widget.refreshview.recyclerview.BaseRecyclerAdapter;
+
+public class EquipmentListAdapter<T> extends BaseRecyclerAdapter<EquipmentListAdapter.ViewHolderEquipment> {
+
+    private LayoutInflater mInflater;
+    private Context mContext;
+    private List<T> mDatas = new ArrayList<>();
+
+    public EquipmentListAdapter(Context mContext) {
+        this.mContext = mContext;
+        mInflater = LayoutInflater.from(mContext);
+    }
+
+    public void addData(List<T> list) {
+        if (list != null && list.size() != 0) {
+            int startposition = mDatas.size();
+            mDatas.addAll(list);
+            notifyItemRangeInserted(startposition, mDatas.size());
+        }
+    }
+
+    public void clear() {
+        int size = mDatas.size();
+        if (size != 0) {
+            mDatas.clear();
+            notifyItemRangeRemoved(0, size);
+        }
+    }
+
+    @Override
+    public ViewHolderEquipment getViewHolder(View view) {
+        return new ViewHolderEquipment(view, false);
+    }
+
+    @Override
+    public ViewHolderEquipment onCreateViewHolder(ViewGroup parent, int viewType, boolean isItem) {
+        View view = mInflater.inflate(R.layout.equipment_list_item, parent, false);
+        return new ViewHolderEquipment(view, true);
+    }
+
+    @Override
+    public void onBindViewHolder(EquipmentListAdapter.ViewHolderEquipment holder, int position, boolean isItem) {
+        if (holder instanceof EquipmentListAdapter.ViewHolderEquipment) {
+            ViewHolderEquipment viewHolderEquipment = holder;
+            DeviceItemBean item = (DeviceItemBean) mDatas.get(position);
+            viewHolderEquipment.tvCommunityName.setText(item.getAddress());
+            viewHolderEquipment.tvTemperature.setText(String.format("%.2f", Double.parseDouble(item.getTemp())) + "℃");
+        }
+    }
+
+    @Override
+    public int getAdapterItemCount() {
+        return mDatas.size();
+    }
+
+    class ViewHolderEquipment extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.tv_community_name)
+        TextView tvCommunityName;
+        @BindView(R.id.tv_temperature)
+        TextView tvTemperature;
+
+        public ViewHolderEquipment(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        public ViewHolderEquipment(View itemView, boolean isitem) {
+            super(itemView);
+            if (isitem) {
+                ButterKnife.bind(this, itemView);
+            }
+        }
+    }
+}

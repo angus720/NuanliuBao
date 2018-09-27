@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_bg"
+    android:orientation="vertical"
+    tools:context=".ui.fragment.AllOrderFragment">
+
+    <com.classic.common.MultipleStatusView
+        android:id="@+id/multiplestatusview_all"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:emptyView="@layout/order_empty_view"
+        app:errorView="@layout/default_error_view">
+
+        <LinearLayout
+            android:id="@+id/content_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <nuanliu.com.modao.widget.refreshview.XRefreshView
+                android:id="@+id/xrefreshview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </android.support.v7.widget.RecyclerView>
+            </nuanliu.com.modao.widget.refreshview.XRefreshView>
+
+        </LinearLayout>
+
+    </com.classic.common.MultipleStatusView>
+
+</LinearLayout>

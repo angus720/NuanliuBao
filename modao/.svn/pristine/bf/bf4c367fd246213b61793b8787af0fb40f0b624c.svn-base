@@ -1,0 +1,165 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.bean.EquipmentBean;
+import nuanliu.com.modao.ui.MainActivity;
+import nuanliu.com.modao.utils.IntentUtils;
+
+/**
+ * 设备监测
+ */
+
+public class EquipmentMonitorActivity extends BaseActivity {
+
+    @BindView(R.id.fl_empty)
+    FrameLayout flEmpty;
+    @BindView(R.id.fl_viewPager)
+    View flViewPager;
+    @BindView(R.id.viewPager)
+    ViewPager viewPager;
+    @BindView(R.id.indicator)
+    LinearLayout llIndicator;
+
+    private List<EquipmentBean> lists = new ArrayList();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initData();
+        initView();
+        initEvent();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_equipment_monitor;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("设备监测");
+        if (null == lists || lists.size() == 0) {
+            flViewPager.setVisibility(View.GONE);
+        } else {
+            for (int i = 0; i < lists.size(); i++) {
+                //set indicator
+                View indicator = LayoutInflater.from(this).inflate(R.layout.equipment_pageindicator,
+                        null);
+                ImageView child1 = (ImageView) indicator.findViewById(R.id.pageindicator);
+                if (i == 0) {
+                    child1.setBackgroundResource(R.drawable.ic_page_indicator_focused);
+                } else {
+                    child1.setBackgroundResource(R.drawable.ic_page_indicator);
+                }
+                llIndicator.addView(indicator);
+            }
+            viewPager.setAdapter(new ViewPagerAdapter());
+            viewPager.addOnPageChangeListener(new EquipmentChangeListener());
+        }
+    }
+
+    private void initEvent() {
+        getToolBar().setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IntentUtils.startActivity(EquipmentMonitorActivity.this, MainActivity.class);
+            }
+        });
+    }
+
+    private void initData() {
+        lists.add(new EquipmentBean("25", "50"));
+        lists.add(new EquipmentBean("26", "51"));
+        lists.add(new EquipmentBean("27", "52"));
+        lists.add(new EquipmentBean("28", "53"));
+    }
+
+    @OnClick({R.id.iv_add_address, R.id.add_equipment, R.id.iv_go_list})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.iv_add_address:
+                IntentUtils.startActivity(this, OnlinePaymentActivity.class);
+                break;
+            case R.id.add_equipment:
+                IntentUtils.startActivity(this, OnlinePaymentActivity.class);
+                break;
+            case R.id.iv_go_list:
+                IntentUtils.startActivity(this, EquipmentListActivity.class);
+                break;
+        }
+    }
+
+    class EquipmentChangeListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            for (int i = 0; i < llIndicator.getChildCount(); i++) {
+                View child = llIndicator.getChildAt(i);
+                ImageView circle = (ImageView) child.findViewById(R.id.pageindicator);
+                if (i == position) {
+                    circle.setBackgroundResource(R.drawable.ic_page_indicator_focused);
+                } else {
+                    circle.setBackgroundResource(R.drawable.ic_page_indicator);
+                }
+            }
+        }
+    }
+
+    //ViewPager页面适配器
+    private class ViewPagerAdapter extends PagerAdapter {
+
+        @Override
+        public int getCount() {
+            return lists.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View arg0, Object arg1) {
+            return arg0 == arg1;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup viewGroup, int position) {
+            View pageItem = LayoutInflater.from(getBaseContext()).inflate(
+                    R.layout.equipment_item, null);
+            final TextView temperature = (TextView) pageItem.findViewById(R.id.tv_temperature);
+            final TextView humidity = (TextView) pageItem.findViewById(R.id.tv_humidity);
+            EquipmentBean bean = lists.get(position);
+            temperature.setText(bean.getTemperature());
+            humidity.setText(bean.getHumidity());
+            viewGroup.addView(pageItem);
+            return pageItem;
+        }
+    }
+}

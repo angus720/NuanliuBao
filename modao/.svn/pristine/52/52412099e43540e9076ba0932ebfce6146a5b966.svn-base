@@ -1,0 +1,70 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+
+/**
+ * 选择缴费方式
+ */
+
+public class ChoosePayWayActivity extends BaseActivity {
+
+    @BindView(R.id.wechat_pay_check)
+    ImageView ivWechatPay;
+    @BindView(R.id.alipay_check)
+    ImageView ivAlipay;
+    @BindView(R.id.union_pay_check)
+    ImageView ivUnionPay;
+
+    public static final String WEIXIN_PAY = "1";
+    public static final String ALIPAY = "2";
+    public static final String UNION_PAY = "3";
+    private String type = WEIXIN_PAY;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_choose_pay_way;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("选择缴费方式");
+    }
+
+    @OnClick({R.id.rl_wechat_pay, R.id.rl_alipay, R.id.rl_union_pay, R.id.confirm_pay})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.rl_wechat_pay:
+                type = WEIXIN_PAY;
+                ivWechatPay.setImageResource(R.mipmap.pay_choose);
+                ivAlipay.setImageResource(R.mipmap.pay_unchoose);
+                ivUnionPay.setImageResource(R.mipmap.pay_unchoose);
+                break;
+            case R.id.rl_alipay:
+                type = ALIPAY;
+                ivAlipay.setImageResource(R.mipmap.pay_choose);
+                ivWechatPay.setImageResource(R.mipmap.pay_unchoose);
+                ivUnionPay.setImageResource(R.mipmap.pay_unchoose);
+                break;
+            case R.id.rl_union_pay:
+                type = UNION_PAY;
+                ivUnionPay.setImageResource(R.mipmap.pay_choose);
+                ivWechatPay.setImageResource(R.mipmap.pay_unchoose);
+                ivAlipay.setImageResource(R.mipmap.pay_unchoose);
+                break;
+            case R.id.confirm_pay:
+                break;
+        }
+    }
+}

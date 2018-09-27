@@ -1,0 +1,294 @@
+package nuanliu.com.modao.ui;
+
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.base.BaseResponse;
+import nuanliu.com.modao.bean.AppUpdate;
+import nuanliu.com.modao.bean.User;
+import nuanliu.com.modao.global.App;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.receiver_service.GrayService;
+import nuanliu.com.modao.ui.activity.ForcedUpdatingActivity;
+import nuanliu.com.modao.ui.dialog.AppDialog;
+import nuanliu.com.modao.ui.fragment.MainHomeFragment;
+import nuanliu.com.modao.ui.fragment.MainMineFragment;
+import nuanliu.com.modao.utils.SpUtil;
+import nuanliu.com.modao.widget.PicControllableRadioButton;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ *
+ */
+public class MainActivity extends BaseActivity {
+
+    @BindView(R.id.fl_maincontent)
+    FrameLayout flMaincontent;
+    @BindView(R.id.rg_mainradiogroup)
+    RadioGroup rgMainradiogroup;
+    @BindView(R.id.title)
+    TextView mTitle;
+    @BindView(R.id.rb_home)
+    PicControllableRadioButton mRbHome;
+    @BindView(R.id.rb_customer)
+    PicControllableRadioButton mRbCustomer;
+    @BindView(R.id.rb_mine)
+    PicControllableRadioButton mRbMine;
+
+    private long statusBarHeight1;
+    private int mlastCheckposition;
+    private PackageInfo mInfo;
+
+    private AppDialog mDialog;
+    private MainHomeFragment mainHomeFragment;
+    private MainMineFragment mainMineFragment;
+    private User user = SpUtil.getUser();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        statusBarHeight1 = -1;
+
+        initView();
+        initData();
+        initEvent();
+        getNewVersion();
+//        grayKeepAlive();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    private void initData() {
+        PackageManager manager = getPackageManager();
+        try {
+            mInfo = manager.getPackageInfo(this.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        refreshUser(user.getUsername(), user.getPasswd(), user.getName(), user.getTelphone(), user.getIDcardNo(), user.getAge(), user.getGender());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getNewVersion();
+        refreshUser(user.getUsername(), user.getPasswd(), user.getName(), user.getTelphone(), user.getIDcardNo(), user.getAge(), user.getGender());
+    }
+
+    private void initView() {
+        getToolBar().setDisplayHomeAsUpEnabled(false);
+    }
+
+    private void grayKeepAlive() {
+        Intent grayIntent = new Intent(App.getContext(), GrayService.class);
+        startService(grayIntent);
+    }
+
+    private void refreshUser(String username, String passwd, String name, String telphone, String IDcardNo, int age, String gender) {
+        ServiceFactory
+                .getApis()
+                .saveorupdateuser(username, passwd, name, telphone, IDcardNo, age, gender)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<BaseResponse>bindToLifecycle())
+                .subscribe(new Subscriber<BaseResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+                        if (baseResponse.getStatus() == 1) {
+//                            Toast.makeText(MainActivity.this, "刷新用户", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 底部按钮点击切换事件
+     */
+    private void initEvent() {
+        //给radiobutton赋值
+        rgMainradiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkid) {
+                FragmentManager supportFragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+                if (checkid != R.id.rb_customer) {
+                    hideFrament(fragmentTransaction);
+                }
+
+                switch (checkid) {
+                    case R.id.rb_home:
+                        if (null == mainHomeFragment) {
+                            mainHomeFragment = new MainHomeFragment();
+                            fragmentTransaction.add(R.id.fl_maincontent, mainHomeFragment, "首页");
+                        } else {
+                            fragmentTransaction.show(mainHomeFragment);
+                        }
+//                        showFragment(mainHomeFragment);
+                        getToolBar().setTitle("首页");
+                        break;
+                    case R.id.rb_mine:
+//                        showFragment(mainMineFragment);
+                        if (null == mainMineFragment) {
+                            mainMineFragment = new MainMineFragment();
+                            fragmentTransaction.add(R.id.fl_maincontent, mainMineFragment, "我的");
+                        } else {
+                            fragmentTransaction.show(mainMineFragment);
+                        }
+                        getToolBar().setTitle("我的");
+                        break;
+                }
+                fragmentTransaction.commit();
+            }
+        });
+        mRbHome.setChecked(true);
+    }
+
+    /**
+     * 获取最新的版本号
+     */
+    protected void getNewVersion() {
+
+        ServiceFactory.getApis().getAppUpdate(" ", mInfo.versionName + "")
+                .subscribeOn(Schedulers.io())
+                .compose(this.<BaseResponse<AppUpdate>>bindToLifecycle())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<BaseResponse<AppUpdate>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse<AppUpdate> appUpdate) {
+                        if (appUpdate.getStatus() == 1) {
+                            if (!appUpdate.getBody().getNewest_version().equalsIgnoreCase("V" + mInfo.versionName)) {
+                                Intent intent = new Intent(MainActivity.this, ForcedUpdatingActivity.class);
+                                intent.putExtra("new_version", appUpdate.getBody().getNewest_version());
+                                startActivity(intent);
+                            }
+                        }
+                    }
+
+                });
+    }
+
+    /**
+     * 显示对应的fragment.
+     */
+    @SuppressWarnings("RestrictedApi")
+    private void showFragment(Fragment fragment) {
+        FragmentManager fm = getSupportFragmentManager();
+
+        FragmentTransaction ft = fm.beginTransaction();
+
+        List<Fragment> fragments = fm.getFragments();
+        if (null != fragments) {
+            for (Fragment f : fragments) {
+                if (f != null && f.isVisible()) {
+                    ft.hide(f);
+                }
+            }
+        }
+        if (!fragment.isAdded()) {
+            ft.add(R.id.fl_maincontent, fragment, fragment.getClass().getSimpleName());
+        }
+        ft.show(fragment).commitAllowingStateLoss();
+    }
+
+    /**
+     * 隐藏显示fragment
+     *
+     * @param fragmentTransaction
+     */
+
+    private void hideFrament(FragmentTransaction fragmentTransaction) {
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        mainHomeFragment = (MainHomeFragment) supportFragmentManager.findFragmentByTag("首页");
+        mainMineFragment = (MainMineFragment) supportFragmentManager.findFragmentByTag("我的");
+        if (mainHomeFragment != null) {
+            fragmentTransaction.hide(mainHomeFragment);
+        }
+        if (mainMineFragment != null) {
+            fragmentTransaction.hide(mainMineFragment);
+        }
+    }
+
+    /**
+     * 点击事件
+     */
+    @OnClick(R.id.rb_customer)
+    public void onClick() {
+        mDialog = new AppDialog(MainActivity.this).builder()
+                .setTitle("客服电话")
+                .setMsg("确认拨打电话：" + getResources().getString(R.string.server_phone) + "吗")
+                .setNegativeButton("取消", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }).setPositiveButton("确定", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(Intent.ACTION_DIAL);
+                        intent.setData(Uri.parse("tel:" + getResources().getString(R.string.server_phone)));
+                        startActivity(intent);
+                    }
+                });
+        mDialog.show();
+    }
+
+    //    两个按返回键退出程序
+    private long exittime = 0;
+
+    /**
+     * 两次按返回键退出系统
+     */
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - exittime > 2000) {
+            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            exittime = System.currentTimeMillis();
+        } else {
+            System.exit(0);
+        }
+    }
+
+}

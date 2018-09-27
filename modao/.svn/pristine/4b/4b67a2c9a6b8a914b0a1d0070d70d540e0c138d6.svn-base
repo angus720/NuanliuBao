@@ -1,0 +1,134 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.bean.CouponBean;
+import nuanliu.com.modao.ui.dialog.AppDialog;
+import nuanliu.com.modao.ui.dialog.CouponDialog;
+import nuanliu.com.modao.utils.DisplayUtil;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.utils.PopupwindowUtils;
+import nuanliu.com.modao.widget.TouchTextView;
+
+/**
+ * 缴费详情
+ */
+
+public class PaymentDetailActivity extends BaseActivity {
+
+    @BindView(R.id.tv_heating_season)
+    TextView tvHeatingSeason;
+
+    private List<CouponBean> couponBeanList;
+    private CouponBean couponBean;
+
+    private PopupWindow mPopupWindow;
+    private CouponDialog couponDialog;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_payment_detail;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("缴费详情");
+    }
+
+    @OnClick({R.id.tll_pay_record, R.id.trl_choose_heat_season, R.id.trl_choose_coupon, R.id.trl_invoice_info, R.id.immediate_payment})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tll_pay_record:
+                IntentUtils.startActivity(this, PayRecordListActivity.class);
+                break;
+            case R.id.trl_choose_heat_season:
+                initPopupWindow();
+                break;
+            case R.id.trl_choose_coupon:
+                if (null != couponBeanList && couponBeanList.size() > 0) {
+                    couponDialog = new CouponDialog(this, couponBeanList, couponBean.getCouponId());
+                    couponDialog.setCouponSelectListener(new CouponDialog.couponSelectListener() {
+                        @Override
+                        public void chooseCoupon(int pos) {
+                            couponBean = couponBeanList.get(pos);
+                        }
+                    });
+                    couponDialog.show();
+                }
+                break;
+            case R.id.trl_invoice_info:
+                IntentUtils.startActivity(this, InvoiceInfoActivity.class);
+                break;
+            case R.id.immediate_payment:
+                new AppDialog(this).builder()
+                        .setTitle(getResources().getString(R.string.warm_prompt))
+                        .setMsg(getResources().getString(R.string.prompt_message))
+                        .setNegativeButton("取消", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        })
+                        .setPositiveButton("确认", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        }).show();
+                break;
+        }
+    }
+
+    private void initPopupWindow() {
+        if (null == mPopupWindow) {
+            mPopupWindow = PopupwindowUtils.initPopupWindow(this, R.layout.popup_heating_season_select, DisplayUtil.dip2px(this, 150), -2);
+            mPopupWindow.setOutsideTouchable(true);
+            mPopupWindow.setFocusable(true);
+            mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
+            TouchTextView season1 = (TouchTextView) mPopupWindow.getContentView().findViewById(R.id.tv_season1);
+            TouchTextView season2 = (TouchTextView) mPopupWindow.getContentView().findViewById(R.id.tv_season2);
+            TouchTextView season3 = (TouchTextView) mPopupWindow.getContentView().findViewById(R.id.tv_season3);
+            ItemClickListener clickListener = new ItemClickListener();
+            season1.setOnClickListener(clickListener);
+            season2.setOnClickListener(clickListener);
+            season3.setOnClickListener(clickListener);
+            mPopupWindow.showAsDropDown(tvHeatingSeason, 0, 10);
+        } else {
+            mPopupWindow.showAsDropDown(tvHeatingSeason, 0, 10);
+        }
+    }
+
+    public class ItemClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.tv_season1:
+                    tvHeatingSeason.setText("2017~2018");
+                    break;
+                case R.id.tv_season2:
+                    tvHeatingSeason.setText("2016~2017");
+                    break;
+                case R.id.tv_season3:
+                    tvHeatingSeason.setText("2015~2016");
+                    break;
+            }
+            mPopupWindow.dismiss();
+        }
+    }
+}

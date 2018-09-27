@@ -1,0 +1,133 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+
+import com.classic.common.MultipleStatusView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.ui.adapter.PaymentUserAdapter;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.widget.TouchLinearLayout;
+import nuanliu.com.modao.widget.refreshview.XRefreshView;
+import nuanliu.com.modao.widget.refreshview.XRefreshViewFooter;
+
+/**
+ * 缴费用户列表
+ */
+
+public class OnlinePaymentActivity extends BaseActivity implements XRefreshView.XRefreshViewListener {
+
+    @BindView(R.id.rv_recyclerview)
+    RecyclerView mRvRecyclerview;
+    @BindView(R.id.content_view)
+    LinearLayout mContentView;
+    @BindView(R.id.multiplestatusview_all)
+    MultipleStatusView mMultiplestatusviewAll;
+    @BindView(R.id.xrefreshview)
+    XRefreshView mXrefreshview;
+    @BindView(R.id.tll_pay_record)
+    TouchLinearLayout tllPayRecord;
+    @BindView(R.id.ll_add_user)
+    LinearLayout llAddUser;
+
+    private List<String> mDatas = new ArrayList<>();
+    private PaymentUserAdapter<String> mAdapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initData();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_online_payment;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("在线缴费");
+//        View footView = LayoutInflater.from(this).inflate(R.layout.add_new_pay_user, null);
+//        footView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                IntentUtils.startActivity(OnlinePaymentActivity.this, AddressBindActivity.class);
+//            }
+//        });
+        View emptyView = LayoutInflater.from(this).inflate(R.layout.default_empty_view, null);
+        Button btnAddAddress = (Button) emptyView.findViewById(R.id.add_payment_address);
+        btnAddAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IntentUtils.startActivity(OnlinePaymentActivity.this, AddressBindActivity.class);
+            }
+        });
+        mXrefreshview.setPinnedTime(1000);
+        mXrefreshview.setMoveForHorizontal(true);
+        mXrefreshview.setPullLoadEnable(true);
+        mXrefreshview.setAutoLoadMore(false);
+
+        mXrefreshview.enableReleaseToLoadMore(true);
+        mXrefreshview.enableRecyclerViewPullUp(true);
+        mXrefreshview.enablePullUpWhenLoadCompleted(true);
+        mXrefreshview.setXRefreshViewListener(this);
+
+        mAdapter = new PaymentUserAdapter<>(this);
+        mAdapter.setCustomLoadMoreView(new XRefreshViewFooter(this));
+        mRvRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+        mRvRecyclerview.setAdapter(mAdapter);
+    }
+
+    private void initData() {
+
+    }
+
+    @OnClick({R.id.tll_pay_record, R.id.ll_add_user})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tll_pay_record:
+                IntentUtils.startActivity(this, PayRecordListActivity.class);
+                break;
+            case R.id.ll_add_user:
+                IntentUtils.startActivity(this, AddressBindActivity.class);
+                break;
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+
+    }
+
+    @Override
+    public void onRefresh(boolean isPullDown) {
+
+    }
+
+    @Override
+    public void onLoadMore(boolean isSilence) {
+
+    }
+
+    @Override
+    public void onRelease(float direction) {
+
+    }
+
+    @Override
+    public void onHeaderMove(double headerMovePercent, int offsetY) {
+
+    }
+}

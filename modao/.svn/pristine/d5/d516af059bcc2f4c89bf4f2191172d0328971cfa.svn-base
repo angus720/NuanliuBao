@@ -1,0 +1,41 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.widget.ClearEditText;
+
+/**
+ * 修改用户名
+ */
+
+public class ModifyUserNameActivity extends BaseActivity {
+
+    @BindView(R.id.cet_new_name)
+    ClearEditText cetNewName;
+
+    private String newName;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_modify_user_name;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("修改用户名");
+    }
+
+    @OnClick(R.id.btn_modify_name)
+    public void onClick() {
+        newName = cetNewName.getText().toString().trim();
+    }
+}

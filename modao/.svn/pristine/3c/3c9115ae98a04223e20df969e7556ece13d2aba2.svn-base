@@ -1,0 +1,105 @@
+package nuanliu.com.modao.ui.adapter;
+
+import android.content.Context;
+import android.content.Intent;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.ui.activity.BillDetailActivity;
+import nuanliu.com.modao.widget.refreshview.recyclerview.BaseRecyclerAdapter;
+
+public class PayRecordListAdapter<T> extends BaseRecyclerAdapter<PayRecordListAdapter.ViewHolderRecord> {
+
+    private LayoutInflater mInflater;
+    private Context mContext;
+    private List<T> mDatas = new ArrayList<>();
+
+    public PayRecordListAdapter(Context mContext) {
+        this.mContext = mContext;
+    }
+
+    @Override
+    public ViewHolderRecord getViewHolder(View view) {
+        return new ViewHolderRecord(view, false);
+    }
+
+    @Override
+    public ViewHolderRecord onCreateViewHolder(ViewGroup parent, int viewType, boolean isItem) {
+        View view = mInflater.inflate(R.layout.item_pay_record, parent, false);
+        return new ViewHolderRecord(view, false);
+    }
+
+    @Override
+    public void onBindViewHolder(PayRecordListAdapter.ViewHolderRecord holder, int position, boolean isItem) {
+        if (holder instanceof PayRecordListAdapter.ViewHolderRecord) {
+            ViewHolderRecord viewHolderRecord = holder;
+            List<String> datas = (List<String>) mDatas;
+            String item = (String) mDatas.get(position);
+        }
+    }
+
+    @Override
+    public int getAdapterItemCount() {
+        return mDatas.size();
+    }
+
+    public void addData(List<T> list) {
+        if (list != null && list.size() != 0) {
+            int startposition = mDatas.size();
+            mDatas.addAll(list);
+            notifyItemRangeInserted(startposition, mDatas.size());
+        }
+    }
+
+    public void clear() {
+
+        int size = mDatas.size();
+        if (size != 0) {
+            mDatas.clear();
+            notifyItemRangeRemoved(0, size);
+        }
+    }
+
+    class ViewHolderRecord extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.pay_type)
+        TextView payType;
+        @BindView(R.id.pay_user)
+        TextView payUser;
+        @BindView(R.id.record_number)
+        TextView recordNumber;
+        @BindView(R.id.record_item_money)
+        TextView recordItemMoney;
+        @BindView(R.id.user_address)
+        TextView userAddress;
+        @BindView(R.id.pay_time)
+        TextView payTime;
+
+        public ViewHolderRecord(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        public ViewHolderRecord(View itemView, boolean isitem) {
+            super(itemView);
+            if (isitem) {
+                ButterKnife.bind(this, itemView);
+            }
+        }
+
+        @OnClick(R.id.item_pay_record)
+        public void onClick(){
+            mContext.startActivity(new Intent(mContext, BillDetailActivity.class));
+        }
+    }
+}

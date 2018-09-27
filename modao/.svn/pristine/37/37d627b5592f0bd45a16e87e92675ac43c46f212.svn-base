@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_bg"
+    android:orientation="vertical"
+    tools:context=".ui.activity.OweListActivity">
+
+    <include layout="@layout/head_toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_total_owe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1000.00"
+            android:textColor="@color/red"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="欠费总金额"
+            android:textColor="@color/charactertintgray"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <com.classic.common.MultipleStatusView
+        android:id="@+id/multiplestatusview_all"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:emptyView="@layout/normal_empty_view"
+        app:errorView="@layout/default_error_view">
+
+        <LinearLayout
+            android:id="@+id/content_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <nuanliu.com.modao.widget.refreshview.XRefreshView
+                android:id="@+id/xrefreshview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </android.support.v7.widget.RecyclerView>
+            </nuanliu.com.modao.widget.refreshview.XRefreshView>
+
+        </LinearLayout>
+
+    </com.classic.common.MultipleStatusView>
+
+</LinearLayout>

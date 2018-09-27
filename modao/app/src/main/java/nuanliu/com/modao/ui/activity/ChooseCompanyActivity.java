@@ -1,0 +1,261 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import butterknife.BindView;
+import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
+import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.bean.CompanyBean;
+import nuanliu.com.modao.bean.CompanyListBean;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.global.App;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.ui.adapter.CompanySelectAdapter;
+import nuanliu.com.modao.utils.SpUtil;
+import nuanliu.com.modao.widget.indexlist.CustomEditText;
+import nuanliu.com.modao.widget.indexlist.SideBar;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * 选择公司
+ */
+
+public class ChooseCompanyActivity extends BaseActivity implements SideBar.OnTouchingLetterChangedListener, TextWatcher,
+        BGARefreshLayout.BGARefreshLayoutDelegate {
+
+    @BindView(R.id.et_custome)
+    CustomEditText mEtCustome;
+    @BindView(R.id.rv_company_select_Recyclerview)
+    RecyclerView rvCompanySelectRecyclerview;
+    @BindView(R.id.refreshlayout)
+    BGARefreshLayout mRefreshlayout;
+    @BindView(R.id.sidebar_right)
+    SideBar mSidebarRight;
+    @BindView(R.id.tv_friend_dialog)
+    TextView mTvFriendDialog;
+
+    private CompanySelectAdapter companySelectAdapter;
+    private List<CompanyBean> mDatas = new ArrayList<>();
+    private LinearLayoutManager mLinearLayoutManager;
+
+    private String city;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        showLoading("加载中...");
+        initView();
+        initEvent();
+        initData();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_choose_company;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("选择公司");
+
+        mRefreshlayout.setDelegate(this);
+        mRefreshlayout.setRefreshViewHolder(new BGANormalRefreshViewHolder(App.getContext(), true));
+        mLinearLayoutManager = new LinearLayoutManager(this);
+        rvCompanySelectRecyclerview.setLayoutManager(mLinearLayoutManager);
+        companySelectAdapter = new CompanySelectAdapter(ChooseCompanyActivity.this, rvCompanySelectRecyclerview);
+        companySelectAdapter.addFootView(R.layout.item_list_company_count);
+        rvCompanySelectRecyclerview.setAdapter(companySelectAdapter);
+
+        mSidebarRight.setTextView(mTvFriendDialog);
+        mSidebarRight.setOnTouchingLetterChangedListener(this);
+        mEtCustome.addTextChangedListener(this);
+    }
+
+    private void initEvent() {
+        Intent intent = getIntent();
+        if (null != intent) {
+            if (intent.hasExtra(Fields.CITY)) {
+                city = intent.getStringExtra(Fields.CITY);
+            }
+        }
+        companySelectAdapter.setOnItemClickListener(new CompanySelectAdapter.ItemClickListener() {
+            @Override
+            public void onItemClick(String companyName, String companyId, int position) {
+                Intent intent = new Intent();
+                intent.putExtra(Fields.CHOOSE_COMPANY, SpUtil.getCompanyName() + "");
+                intent.putExtra(Fields.COMPANY_ID, SpUtil.getCompanyId() + "");
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+    }
+
+    private void initData() {
+        getCompanyList(city, true);
+    }
+
+    /**
+     * @param ispulltorefresh todo 加载更多
+     */
+    private void getCompanyList(String city, final boolean ispulltorefresh) {
+        if (ispulltorefresh) {
+            mDatas.clear();
+        }
+        ServiceFactory
+                .getApis()
+                .getCompanys("", city)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<CompanyListBean>bindToLifecycle())
+                .subscribe(new Subscriber<CompanyListBean>() {
+                    @Override
+                    public void onCompleted() {
+                        dismissLoading();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        dismissLoading();
+                        Toast.makeText(ChooseCompanyActivity.this, "请重试", Toast.LENGTH_SHORT).show();
+                        if (ispulltorefresh) {
+//                            mRefreshlayout.endRefreshing();
+                        }
+                    }
+
+                    @Override
+                    public void onNext(CompanyListBean companyListBean) {
+                        if (companyListBean.getStatus() == 1) {
+                            if (null != companyListBean.getBody().getList()) {
+                                List<CompanyBean> list = dealwithData(companyListBean.getBody().getList());
+                                mDatas.addAll(list);
+                                refreshView(mDatas);
+                            }
+                        }
+                    }
+                });
+    }
+
+    private List<CompanyBean> dealwithData(List<CompanyListBean.BodyBean.DatasBean> datas) {
+        List<CompanyBean> list = new ArrayList();
+        for (int i = 0; i < datas.size(); i++) {
+            list.add(new CompanyBean(datas.get(i).getCompanyid(), datas.get(i).getCompanyname()));
+        }
+        return list;
+    }
+
+    private void refreshView(List<CompanyBean> list) {
+        companySelectAdapter.clear();
+        companySelectAdapter.addData(list);
+        companySelectAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onTouchingLetterChanged(String s) {
+        int position = 0;
+        // 该字母首次出现的位置
+        if (companySelectAdapter != null) {
+            position = companySelectAdapter.getPostition(s.charAt(0));
+
+        }
+        if (position != -1) {
+            companySelectAdapter.moveToPosition(position);
+            Log.d("ChooseCompanyActivity", "position:" + position);
+        } else if (s.contains("#")) {
+            companySelectAdapter.moveToPosition(1000);
+        }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        ArrayList<CompanyBean> temp = new ArrayList<>(mDatas);
+        for (CompanyBean data : mDatas) {
+
+            if (data.getCompanyname().contains(s) || data.getPinyin().contains(s)) {
+
+
+            } else {
+                temp.remove(data);
+            }
+        }
+        if (companySelectAdapter != null) {
+            companySelectAdapter.clear();
+            companySelectAdapter.addData(temp);
+            companySelectAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
+
+    @Override
+    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+        getCompanyList(city, true);
+        Observable.timer(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Long>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mRefreshlayout.endRefreshing();
+                    }
+
+                    @Override
+                    public void onNext(Long aLong) {
+                        mRefreshlayout.endRefreshing();
+                    }
+                });
+    }
+
+    @Override
+    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        mRefreshlayout.setIsShowLoadingMoreView(true);
+        Observable.timer(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Long>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mRefreshlayout.endLoadingMore();
+                    }
+
+                    @Override
+                    public void onNext(Long aLong) {
+                        mRefreshlayout.endLoadingMore();
+                    }
+                });
+        return false;
+    }
+}

@@ -1,0 +1,72 @@
+package nuanliu.com.modao.widget;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.widget.RadioButton;
+
+import com.zhy.autolayout.utils.AutoUtils;
+
+import nuanliu.com.modao.R;
+
+
+/**
+ * Created by soleAnt on 2016/11/4.
+ */
+
+public class PicControllableRadioButton extends RadioButton {
+    private int mPixelSize;
+    private Drawable mDrawabletop;
+    private Drawable mDrawablebottom;
+    private Drawable mDrawableright;
+    private Drawable mDrawableleft;
+
+    public PicControllableRadioButton(Context context) {
+        this(context,null,0);
+    }
+
+    public PicControllableRadioButton(Context context, AttributeSet attrs) {
+        this(context, attrs,0);
+    }
+
+    public PicControllableRadioButton(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        mDrawableleft = null;
+        mDrawableright = null;
+        mDrawabletop = null;
+        mDrawablebottom = null;
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PicControllableRadioButton);
+        mPixelSize = typedArray.getDimensionPixelSize(R.styleable.PicControllableRadioButton_drawableSize, 40);
+        mDrawabletop = typedArray.getDrawable(R.styleable.PicControllableRadioButton_drawableTop);
+        mDrawablebottom = typedArray.getDrawable(R.styleable.PicControllableRadioButton_drawableBottom);
+        mDrawableright = typedArray.getDrawable(R.styleable.PicControllableRadioButton_drawableRight);
+        mDrawableleft = typedArray.getDrawable(R.styleable.PicControllableRadioButton_drawableLeft);
+        typedArray.recycle();
+        setCompoundDrawablesWithIntrinsicBounds(mDrawableleft,mDrawabletop,mDrawableright,mDrawablebottom);
+        AutoUtils.auto(this);
+    }
+
+    @Override
+    public void setCompoundDrawablesWithIntrinsicBounds(Drawable left, Drawable top, Drawable right, Drawable bottom) {
+//        super.setCompoundDrawablesWithIntrinsicBounds(left, top, right, bottom);
+        if (left != null) {
+            left.setBounds(0,0,mPixelSize,mPixelSize);
+        }
+        if (top != null) {
+            top.setBounds(0,0,mPixelSize,mPixelSize);
+        }
+        if (right != null) {
+            right.setBounds(0,0,mPixelSize,mPixelSize);
+        }
+        if (bottom != null) {
+            bottom.setBounds(0,0,mPixelSize,mPixelSize);
+        }
+        setCompoundDrawables(left,top,right,bottom);
+    }
+
+    @Override
+    public void setOnClickListener(OnClickListener l) {
+        super.setOnClickListener(l);
+    }
+}

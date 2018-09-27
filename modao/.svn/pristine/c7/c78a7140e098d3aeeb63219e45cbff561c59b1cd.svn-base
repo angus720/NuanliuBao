@@ -1,0 +1,85 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.widget.Toast;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.base.BaseResponse;
+import nuanliu.com.modao.bean.User;
+import nuanliu.com.modao.global.App;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.utils.SpUtil;
+import nuanliu.com.modao.widget.ClearEditText;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * 修改用户名
+ */
+
+public class ModifyUserNameActivity extends BaseActivity {
+
+    @BindView(R.id.cet_new_name)
+    ClearEditText cetNewName;
+
+    private String newName;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_modify_user_name;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("修改用户名");
+    }
+
+    private void updateNickName(String telphone, final String nickName) {
+        ServiceFactory
+                .getApis()
+                .updateNickName(telphone, nickName)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .compose(this.<BaseResponse<User>>bindToLifecycle())
+                .subscribe(new Subscriber<BaseResponse<User>>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse<User> baseResponse) {
+                        if (baseResponse.getStatus() == 1) {
+                            Toast.makeText(ModifyUserNameActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
+
+                            User user = baseResponse.getBody();
+                            SpUtil.saveUser(user);
+                            App.setUser(user);
+
+                            IntentUtils.startActivity(ModifyUserNameActivity.this, UserInfoActivity.class);
+                        }
+                    }
+                });
+    }
+
+    @OnClick(R.id.btn_modify_name)
+    public void onClick() {
+        newName = cetNewName.getText().toString().trim();
+        updateNickName(SpUtil.getUser().getTelphone(), newName);
+    }
+}

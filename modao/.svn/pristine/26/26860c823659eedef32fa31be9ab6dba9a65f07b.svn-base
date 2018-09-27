@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_homecontent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.fragment.MainHomeFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <nuanliu.com.modao.widget.convenientbanner.ConvenientBanner
+                    android:id="@+id/myhome_banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="420px" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/view_line_gray"
+                android:layout_height="10dp" />
+
+            <RelativeLayout
+                android:id="@+id/rl_notice"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/white"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/iv1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@mipmap/home_notice" />
+
+                <!--<TextView-->
+                    <!--android:id="@+id/tv1"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginLeft="8dp"-->
+                    <!--android:layout_toRightOf="@id/iv1"-->
+                    <!--android:text="通知：" />-->
+
+                <TextView
+                    android:id="@+id/tv_important_notice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_toRightOf="@id/iv1"
+                    android:layout_toLeftOf="@id/iv_go"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:text="@string/card_number_detail" />
+
+                <!--<TextView-->
+                    <!--android:id="@+id/tv_notice_date"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="2018-06-28"-->
+                    <!--android:layout_marginRight="5dp"-->
+                    <!--android:layout_toLeftOf="@id/iv_go"/>-->
+
+                <ImageView
+                    android:id="@+id/iv_go"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:src="@mipmap/go_next" />
+
+            </RelativeLayout>
+
+            <!--四个按钮-->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="500px"
+                android:layout_marginTop="18px"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+                <View
+                    style="@style/view_line_h_gray"
+                    android:layout_centerInParent="true" />
+
+                <View
+                    style="@style/view_line_gray"
+                    android:layout_centerInParent="true" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="60px"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/iv_online_payment"
+                            android:layout_width="80px"
+                            android:layout_height="80px"
+                            android:src="@mipmap/home_icon1" />
+
+                        <TextView
+                            style="@style/home_4_button_description_textview"
+                            android:text="在线缴费" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/iv_trouble_repair"
+                            android:layout_width="80px"
+                            android:layout_height="80px"
+                            android:src="@mipmap/home_icon2" />
+
+                        <TextView
+                            style="@style/home_4_button_description_textview"
+                            android:text="故障报修" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!--<View style="@style/view_line_gray"/>-->
+
+                <!--第二行-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="60px"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/iv_equipment_monitor"
+                            android:layout_width="80px"
+                            android:layout_height="80px"
+                            android:src="@mipmap/home_icon3" />
+
+                        <TextView
+                            style="@style/home_4_button_description_textview"
+                            android:text="设备监测" />
+
+                    </LinearLayout>
+
+                    <!--<View style="@style/view_line_h_gray"></View>-->
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/iv_feedback"
+                            android:layout_width="80px"
+                            android:layout_height="80px"
+                            android:src="@mipmap/home_icon4" />
+
+                        <TextView
+                            style="@style/home_4_button_description_textview"
+                            android:text="意见反馈" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

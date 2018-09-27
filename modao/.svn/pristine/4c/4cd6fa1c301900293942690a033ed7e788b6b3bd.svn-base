@@ -1,0 +1,324 @@
+package nuanliu.com.modao.network;
+
+import java.util.List;
+
+import nuanliu.com.modao.base.BaseResponse;
+import nuanliu.com.modao.bean.AddressListBean;
+import nuanliu.com.modao.bean.CodeBean;
+import nuanliu.com.modao.bean.CompanyListBean;
+import nuanliu.com.modao.bean.OrderDetailBean;
+import nuanliu.com.modao.bean.PayRecordListBean;
+import nuanliu.com.modao.bean.ResidentInfoBean;
+import nuanliu.com.modao.bean.ResidentListBean;
+import nuanliu.com.modao.bean.UploadImgRes;
+import nuanliu.com.modao.bean.User;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import rx.Observable;
+
+public interface Apis {
+
+    /**
+     * 图片上传接口
+     */
+    @Multipart
+    @POST("file/appUploadTest/image/false")
+    Observable<UploadImgRes> upLoadFile(
+            @Part("description") RequestBody description,
+            @Part List<MultipartBody.Part> parts
+    );
+
+    /**
+     * 登录系统
+     */
+    @FormUrlEncoded
+    @POST("user/login.do")
+    Observable<BaseResponse<User>> loginSystem(
+            @Field("username") String username,
+            @Field("passwd") String passwd
+    );
+
+    /**
+     * 注册
+     */
+    @FormUrlEncoded
+    @POST("user/registerUser.do")
+    Observable<BaseResponse> registerUser(
+            @Field("username") String username,
+            @Field("passwd") String passwd,
+            @Field("telphone") String telphone,
+            @Field("veriCode") String veriCode
+    );
+
+    /**
+     * 注册验证
+     */
+    @FormUrlEncoded
+    @POST("user/finduser.do")
+    Observable<BaseResponse> finduser(
+            @Field("username") String username,
+            @Field("telphone") String telphone
+    );
+
+    /**
+     * 根据用户名密码、验证码修改密码
+     */
+    @FormUrlEncoded
+    @POST("user/uppwdbyusername.do")
+    Observable<BaseResponse> uppwdbyUsername(
+            @Field("username") String username,
+            @Field("password") String password,
+            @Field("newpwd") String newpwd
+    );
+
+    /**
+     * 根据手机号、验证码修改密码
+     */
+    @FormUrlEncoded
+    @POST("user/uppwdbytelphone.do")
+    Observable<BaseResponse> uppwdbyTelphone(
+            @Field("telphone") String telphone,
+            @Field("newpwd") String newpwd,
+            @Field("veriCode") String veriCode
+    );
+
+    /**
+     * 保存更新APP用户
+     */
+    @FormUrlEncoded
+    @POST("user/saveorupdateuser.do")
+    Observable<BaseResponse> saveorupdateuser(
+            @Field("username") String username,
+            @Field("passwd") String passwd,
+            @Field("name") String name,
+            @Field("telphone") String telphone,
+            @Field("IDcardNo") String IDcardNo,
+            @Field("age") int age,
+            @Field("gender") String gender
+    );
+
+    /**
+     * 绑定房屋
+     * username,用户名
+     * telphone,手机号
+     * companyid,公司ID
+     * householder,户主姓名
+     * account_h  用户账号
+     */
+    @FormUrlEncoded
+    @POST("user/bdHouse.do")
+    Observable<BaseResponse> bdHouse(
+            @Field("username") String username,
+            @Field("telphone") String telphone,
+            @Field("companyid") String companyid,
+            @Field("householder") String householder,
+            @Field("account_h") String account_h
+    );
+
+    /**
+     * 获取所有公司
+     */
+    @FormUrlEncoded
+    @POST("user/getCompanys.do")
+    Observable<CompanyListBean> getCompanys(
+            @Field("name") String name,
+            @Field("city") String city
+    );
+
+    /**
+     * 获取支付信息
+     * residentid  住户id
+     * payMethod 支付方式(wx,zfb,ysf)<微信，支付宝，云闪付>
+     */
+    @FormUrlEncoded
+    @POST("user/getPayInfo.do")
+    Observable<BaseResponse> getPayInfo(
+            @Field("residentid") String residentid,
+            @Field("payMethod") String payMethod
+    );
+
+    /**
+     * 用户地址列表
+     * String username  *
+     * int startPage(可选，默认1)
+     * int pageSize(可选，默认10)
+     */
+    @FormUrlEncoded
+    @POST("userAdress/userAdressList.do")
+    Observable<AddressListBean> getAddressList(
+            @Field("username") String username,
+            @Field("startPage") int startPage,
+            @Field("pageSize") int pageSize
+    );
+
+    /**
+     * 保存更新用户收件地址
+     * String id
+     * String username  *
+     * String provice(省)
+     * String city(市)
+     * String district(区县)
+     * String detailed(详细地址)
+     * String contacts(收件人姓名)
+     * String telphone(收件人电话)
+     * int isDefault(是否默认地址)
+     */
+    @FormUrlEncoded
+    @POST("userAdress/saveorupdateUserAdress.do")
+    Observable<BaseResponse> editAddress(
+            @Field("id") String id,
+            @Field("username") String username,
+            @Field("provice") String provice,
+            @Field("city") String city,
+            @Field("district") String district,
+            @Field("detailed") String detailed,
+            @Field("contacts") String contacts,
+            @Field("telphone") String telphone,
+            @Field("isDefault") int isDefault
+    );
+
+    /**
+     * 删除用户收件地址
+     * String id(收件地址id)
+     */
+    @FormUrlEncoded
+    @POST("userAdress/delUserAdress.do")
+    Observable<BaseResponse> delAddress(
+            @Field("id") String id
+    );
+
+    /**
+     * 已绑定房屋列表
+     * String username *
+     * int startPage(可选，默认1)
+     * int pageSize(可选，默认10)
+     */
+    @FormUrlEncoded
+    @POST("user/bdList.do")
+    Observable<ResidentListBean> bdResidentList(
+            @Field("username") String username,
+            @Field("startPage") int startPage,
+            @Field("pageSize") int pageSize
+    );
+
+    /**
+     * 修改绑定房屋
+     * String username  *
+     * String resident_o(原住户ID)  *
+     * String companyid(公司id)  *
+     * String householder(户主姓名)  *
+     * String account_h(用户卡号)  *
+     */
+    @FormUrlEncoded
+    @POST("user/upbdResident.do")
+    Observable<BaseResponse> upbdResident(
+            @Field("username") String username,
+            @Field("resident_o") String resident_o,
+            @Field("companyid") String companyid,
+            @Field("householder") String householder,
+            @Field("account_h") String account_h
+    );
+
+    /**
+     * 删除绑定房屋
+     * String username  *
+     * String resident(要删除的住户id)  *
+     */
+    @FormUrlEncoded
+    @POST("user/delbdResindet.do")
+    Observable<BaseResponse> delbdResident(
+            @Field("username") String username,
+            @Field("resident") String resident
+    );
+
+    /**
+     * 查找房屋
+     * String username  *  用户名
+     * String telphone   电话
+     * String companyid  公司id
+     * String householder  户主姓名
+     * String account_h  *用户新卡号
+     */
+    @FormUrlEncoded
+    @POST("user/findHouse.do")
+    Observable<BaseResponse<ResidentInfoBean>> findHouse(
+            @Field("username") String username,
+            @Field("telphone") String telphone,
+            @Field("companyid") String companyid,
+            @Field("householder") String householder,
+            @Field("account_h") String account_h
+    );
+
+    /**
+     * 查找用户新卡号
+     * String username  *  用户名
+     * String telphone   电话
+     * String companyid  公司id
+     * String householder  户主姓名
+     * String account_h_old  *用户旧卡号
+     */
+    @FormUrlEncoded
+    @POST("user/findNewNumber.do")
+    Observable<ResidentListBean> findNewNumber(
+            @Field("username") String username,
+            @Field("telphone") String telphone,
+            @Field("companyid") String companyid,
+            @Field("householder") String householder,
+            @Field("account_h_old") String account_h_old
+    );
+
+    /**
+     * 根据房屋ID绑定房屋
+     * String account  *用户账号
+     * String residentid_old  房屋id(修改时必填，新增时不填)
+     * String residentid  *房屋id
+     */
+    @FormUrlEncoded
+    @POST("user/bdHousebyResidentid.do")
+    Observable<BaseResponse> bdHousebyResidentid(
+            @Field("username") String username,
+            @Field("residentid_old") String residentid_old,
+            @Field("residentid") String residentid
+    );
+
+    /**
+     * 获取验证码
+     * String telphone *
+     */
+    @FormUrlEncoded
+    @POST("user/getVerificationCode.do")
+    Observable<BaseResponse<CodeBean>> getVeriCode(
+            @Field("telphone") String telphone
+    );
+
+    /**
+     * 用户缴费记录
+     * String account  *
+     * String residents  *
+     * int startPage(可选，默认1)
+     * int pageSize(可选，默认10)
+     */
+    @FormUrlEncoded
+    @POST("paymentOrder/userPaymentRecorde.do")
+    Observable<PayRecordListBean> paymentList(
+            @Field("username") String username,
+            @Field("residents") String residents,
+            @Field("startPage") int startPage,
+            @Field("pageSize") int pageSize
+    );
+
+    /**
+     * 账单详情
+     * String String id
+     */
+    @FormUrlEncoded
+    @POST("paymentOrder/userPaymentOrder.do")
+    Observable<BaseResponse<OrderDetailBean>> orderDetail(
+            @Field("id") String id
+    );
+}

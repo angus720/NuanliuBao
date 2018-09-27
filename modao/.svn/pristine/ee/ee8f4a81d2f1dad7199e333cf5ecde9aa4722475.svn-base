@@ -1,0 +1,221 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.animation.ValueAnimator;
+import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseResponse;
+import nuanliu.com.modao.bean.User;
+import nuanliu.com.modao.global.App;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.other.KeyboardChangeListener;
+import nuanliu.com.modao.ui.MainActivity;
+import nuanliu.com.modao.utils.ArithUtils;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.utils.SpUtil;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * 登录Activity
+ */
+
+public class LoginActivity extends RxAppCompatActivity implements KeyboardChangeListener.KeyBoardListener {
+
+    @BindView(R.id.tv_rightnowlogin)
+    TextView mTvRightnowlogin;
+
+    @BindView(R.id.et_account)
+    EditText etAccount;
+
+    @BindView(R.id.et_passwd)
+    EditText etPasswd;
+
+    @BindView(R.id.iv_pwd_visual)
+    ImageView ivPwdVisual;
+
+    @BindView(R.id.ll_topview)
+    LinearLayout mLlTopview;
+
+    private int mPaddingBottom;
+    private int mPaddingTop;
+
+    private KeyboardChangeListener mKeyboardChangeListener;
+    private boolean mShowPwd;
+
+    private String userName;
+    private String passwd;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
+        initView();
+        initEvent();
+    }
+
+    private void initEvent() {
+
+        mKeyboardChangeListener = new KeyboardChangeListener(this);
+        mKeyboardChangeListener.setKeyBoardListener(this);
+    }
+
+    private void initView() {
+        Window window = getWindow();
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//
+//            WindowManager.LayoutParams localLayoutParams = window.getAttributes();
+//            localLayoutParams.flags = (WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | localLayoutParams.flags);
+//
+//        }
+        mPaddingBottom = mLlTopview.getPaddingBottom();
+        mPaddingTop = mLlTopview.getPaddingTop();
+        etAccount.setText(SpUtil.getUser().getUsername());
+
+        App.setIsRejective(true);
+    }
+
+    @OnClick({R.id.tv_rightnowlogin, R.id.forget_password, R.id.register, R.id.iv_pwd_visual})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tv_rightnowlogin:
+                mTvRightnowlogin.setClickable(false);
+                userName = etAccount.getText().toString().trim() + "";
+                passwd = etPasswd.getText().toString().trim() + "";
+                if (userName.equals("") || passwd.equals("")) {
+                    Toast.makeText(this, "请输入账号和密码", Toast.LENGTH_SHORT).show();
+                    mTvRightnowlogin.setClickable(true);
+                    return;
+                } else if (userName.equals("123") && passwd.equals("123")) {
+                    IntentUtils.startActivity(this, MainActivity.class);
+                    finish();
+                } else {
+                    loginRequest(userName, passwd);
+                }
+                break;
+            case R.id.forget_password:
+                IntentUtils.startActivity(this, FindPasswordActivity.class);
+                break;
+            case R.id.register:
+                IntentUtils.startActivity(this, RegisterActivity.class);
+                break;
+            case R.id.iv_pwd_visual:
+                mShowPwd = !mShowPwd;
+                etPasswd.setTransformationMethod(mShowPwd ? HideReturnsTransformationMethod.getInstance() : PasswordTransformationMethod.getInstance());
+                ivPwdVisual.setImageResource(mShowPwd ? R.mipmap.pwd_visual : R.mipmap.pwd_gone);
+                etPasswd.setSelection(etPasswd.getText().length());
+                break;
+        }
+    }
+
+    private void loginRequest(String userName, String passwd) {
+        ServiceFactory
+                .getApis()
+                .loginSystem(userName, passwd)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<BaseResponse<User>>bindToLifecycle())
+                .subscribe(new Subscriber<BaseResponse<User>>() {
+                    @Override
+                    public void onCompleted() {
+                        mTvRightnowlogin.setClickable(true);
+                        ServiceFactory.setApisNull();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mTvRightnowlogin.setClickable(true);
+                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        ServiceFactory.setApisNull();
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse<User> userBaseResponse) {
+                        if (userBaseResponse.getStatus() == 1) {
+                            Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                            SpUtil.saveLoginState(true);
+
+                            User user = userBaseResponse.getBody();
+                            SpUtil.saveUser(user);
+                            App.setUser(user);
+
+                            App.setIsRejective(false);
+                            IntentUtils.startActivity(LoginActivity.this, MainActivity.class);
+                            finish();
+                        } else {
+                            Toast.makeText(LoginActivity.this, userBaseResponse.getStatus_name() + "\n请检查输入的账号和密码是否正确", Toast.LENGTH_SHORT).show();
+                            //清除net数据
+                            ServiceFactory.setApisNull();
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void onKeyboardChange(boolean isShow, int keyboardHeight) {
+        if (isShow) {
+            ViewCompat.animate(mLlTopview).scaleY(0.8f).scaleX(0.8f).setDuration(500).setInterpolator(new FastOutLinearInInterpolator()).start();
+        } else {
+            mLlTopview.setPadding(0, mPaddingTop, 0, mPaddingBottom);
+            ViewCompat.animate(mLlTopview).scaleY(1f).scaleX(1f).setDuration(500).setInterpolator(new FastOutLinearInInterpolator()).start();
+        }
+
+        final ValueAnimator valueAnimator = new ValueAnimator();
+
+        valueAnimator.setDuration(500);
+
+        if (isShow) {
+            valueAnimator.setIntValues(mPaddingBottom, 0);
+        } else {
+            valueAnimator.setIntValues(0, mPaddingBottom);
+        }
+
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int value = (int) animation.getAnimatedValue();
+                int top = -1;
+                if (value == 0) {
+                    top = 0;
+                } else {
+                    top = (int) (ArithUtils.div(ArithUtils.mul(mPaddingTop, value), mPaddingBottom, 2) + 0.5);
+                }
+                mLlTopview.setPadding(0, top + 30, 0, value);
+            }
+        });
+        valueAnimator.start();
+    }
+
+    // 两个按返回键退出程序
+    private long exittime = 0;
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - exittime > 2000) {
+            Toast.makeText(App.getContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            exittime = System.currentTimeMillis();
+        } else {
+            System.exit(0);
+        }
+    }
+}

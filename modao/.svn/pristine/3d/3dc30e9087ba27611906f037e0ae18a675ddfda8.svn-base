@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">modao</string>
+    <string name="company_name">暖流科技</string>
+    <string name="forget_password">忘记密码？</string>
+    <string name="no_account">没有账号，</string>
+    <string name="register">立即注册</string>
+    <string name="server_phone">010-53388531</string>
+    <string name="payment_record">缴费记录</string>
+    <string name="warm_prompt">温馨提示</string>
+    <string name="prompt_message">当前账号已冻结，系统暂不支持缴费，请立即到营业厅办理。</string>
+    <string name="how_know_card_number">怎样知道我家的用户卡号？</string>
+    <string name="card_number_detail">用户卡号是一个16位的数字编码，您可以从与热力公司签署的供热合同、往年缴费收据、发票以及用户信息服务卡中查到</string>
+    <string name="invoice_tip">说明：电子发票预计需要3个工作日左右开具完成，开具后会给您填写的手机号发短信通知，务必保证手机号填写正确。</string>
+    <string name="feedback">欢迎提出您的宝贵意见、建议，我们将不断完善，为您提供更优质的产品体验和服务！</string>
+    <string name="bind_tip">\t\t\t\t地址绑定和在线缴费功能，只面向北京暖流科技公司的居民热用户，非本公司用户，请联系您的供热服务单位进行缴费。</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_activity_main">MainActivity</string>
+    <string name="xrefreshview_header_hint_normal">下拉刷新</string>
+    <string name="xrefreshview_header_hint_ready">松开刷新数据</string>
+    <string name="xrefreshview_header_hint_refreshing">正在刷新...</string>
+    <string name="xrefreshview_header_hint_loading">正在加载...</string>
+    <string name="xrefreshview_header_hint_loaded">加载完成</string>
+    <string name="xrefreshview_header_hint_loaded_fail">加载失败</string>
+    <string name="xrefreshview_header_last_time">上次更新时间：</string>
+    <string name="xrefreshview_footer_hint_normal">加载完成</string>
+    <string name="xrefreshview_footer_hint_fail">加载失败，请重试</string>
+    <string name="xrefreshview_footer_hint_complete">已无更多数据</string>
+    <string name="xrefreshview_footer_hint_click">点击加载更多</string>
+    <string name="xrefreshview_footer_hint_release">松开加载更多</string>
+    <string name="xrefreshview_footer_hint_ready">松开载入更多</string>
+    <string name="xrefreshview_never_refresh">从未刷新</string>
+    <string name="xrefreshview_refresh_justnow">刚刚刷新</string>
+    <string name="xrefreshview_refresh_minutes_ago">%1s分钟之前刷新</string>
+    <string name="xrefreshview_refresh_hours_ago">%1s小时之前刷新</string>
+    <string name="xrefreshview_refresh_days_ago">%1s天之前刷新</string>
+
+</resources>

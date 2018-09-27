@@ -1,0 +1,504 @@
+package com.nuanliu.finme.network;
+
+import android.util.Log;
+
+import com.nuanliu.finme.global.App;
+import com.nuanliu.finme.utils.URLUtils;
+import com.nuanliu.finme.widget.refreshview.utils.LogUtils;
+
+import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import cn.jpush.android.api.JPushInterface;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
+import okio.Buffer;
+import okio.BufferedSource;
+import okio.ForwardingSource;
+import okio.Okio;
+import okio.Source;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static okhttp3.internal.Util.delimiterOffset;
+import static okhttp3.internal.Util.trimSubstring;
+
+/**
+ * Created by Deity on 2016/12/15.
+ */
+
+public class ServiceFactory {
+
+    private static OkHttpClient okhttpClient = new OkHttpClient();
+    private static final int TIMEOUT_CONNECTION = 10;
+    private static Apis apis;
+
+    private static Apis repairapis;
+
+    private static Apis latandlonapis;
+
+    private static String msessionid = "";
+
+    private static String mrepairsessionid = "";
+
+    private static String registrationID = JPushInterface.getRegistrationID(App.getContext());
+    private static Response response;
+    private static final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor()
+            .setLevel(HttpLoggingInterceptor.Level.BODY);
+//    private static CacheInterceptor cacheInterceptor = new CacheInterceptor();
+    public static Apis getRepairapis() {
+        if (repairapis == null) {
+            synchronized (ServiceFactory.class) {
+                if (repairapis == null) {
+                    init(2);
+                }
+            }
+        }
+        return repairapis;
+    }
+
+    public static Apis getLatandlonapis() {
+        if (latandlonapis == null) {
+            synchronized (ServiceFactory.class) {
+                if (latandlonapis == null) {
+                    init(3);
+                }
+            }
+        }
+        return latandlonapis;
+    }
+
+    public static OkHttpClient getOkhttpClient() {
+        return okhttpClient;
+    }
+
+    public static Apis getApis() {
+        if (apis == null) {
+            synchronized (ServiceFactory.class) {
+                if (apis == null) {
+                    init(1);
+                }
+            }
+        }
+        return apis;
+    }
+
+
+    public static void setApisNull() {
+
+        apis = null;
+        repairapis = null;
+    }
+
+    private static void init(int flag) {
+        CookieManager cookieManager = new CookieManager();
+        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+//        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+//            @Override
+//            public void log(String message) {
+//                //打印retrofit日志
+//                Log.i("RetrofitLog", "retrofitBack = " + message);
+//            }
+//        });
+//        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(TIMEOUT_CONNECTION, TimeUnit.SECONDS)//设置超时时间
+                .retryOnConnectionFailure(true)
+//                .cookieJar(new JavaNetCookieJar(cookieManager))
+                //                            .cookieJar(cookieJar)
+                .addNetworkInterceptor(new NetworkInterceptor())
+                .addInterceptor(interceptor)//打印日志
+//                .addInterceptor(cacheInterceptor)
+                .connectTimeout(8, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .build();
+
+//        添加拦截
+//        if (BuildConfig.DEBUG) {
+//            client.addInterceptor(loggingInterceptor);
+//        }
+
+        if (flag == 1) {
+
+            apis = new Retrofit.Builder()
+                    .baseUrl(URLUtils.getWebRoot())
+                    .client(client)
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//设置回调适配器
+
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                    .create(Apis.class);
+        } else if (flag == 2) {
+            repairapis = new Retrofit.Builder()
+                    .baseUrl(URLUtils.REPAIR_BASEURL)
+                    .client(client)
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//设置回调适配器
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                    .create(Apis.class);
+
+        } else if (flag == 3) {
+            latandlonapis = new Retrofit.Builder()
+                    //http://www.comelogin.com/platform/unity/res/config/finme/gps.json
+                    .baseUrl("http://www.comelogin.com/platform/")
+                    .client(client)
+                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//设置回调适配器
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                    .create(Apis.class);
+        }
+
+    }
+
+    /**
+     * 加请求头和sessionid 持久化处理
+     */
+    public static class NetworkInterceptor implements Interceptor {
+        //        private   String TAG = NetworkInterceptor.class.getSimpleName();
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request requestOrigin = chain.request();
+            //            获取set——cookie值
+            //            Response originalResponse = chain.proceed(requestOrigin);
+            Headers headersOrigin = requestOrigin.headers();
+            Headers headers = headersOrigin.newBuilder()
+                    .set("sessionid", msessionid)
+                    .set("deviceid", registrationID)
+                    .set("account", App.getUser().getAccount())
+                    .set("passwd", App.getUser().getPasswd())
+                    .set("Content-Type", "application/x-www-form-urlencoded")
+                    .set("user-agent", "mobile_app_android")
+                    .set("type", "finme")
+                    //                    测试账号密码
+                    .build();
+            Request request = requestOrigin.newBuilder().headers(headers).build();
+            response = chain.proceed(request);
+            input();
+            if (!response.headers("sessionid").isEmpty() && msessionid.equals("")) {
+                List<String> sessionidlist = response.headers("sessionid");
+                if (sessionidlist != null && sessionidlist.size() > 0) {
+                    msessionid = sessionidlist.get(0);
+                }
+
+            }
+            return response;
+        }
+    }
+
+    private static void input() {
+
+        //        if (Contant.IsDebug) {
+                    LogUtils.e("response返回参数:" + response.toString());
+
+        //添加打印服务器返回的数据
+        ResponseBody responseBody = response.body();
+        long contentLength = responseBody.contentLength();
+//        response.peekBody(response.body().contentLength());
+        BufferedSource source = responseBody.source();
+        try {
+            source.request(Integer.MAX_VALUE); // Buffer the entire body.
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Buffer buffer = source.buffer();
+
+//        Log.e("服务器返回数据","4544545");
+        if (contentLength != 0) {
+            Log.e("服务器返回数据",buffer.clone().readString(Charset.forName("UTF-8")));
+        }
+    }
+    //    }
+
+    /**
+     * 加请求头和sessionid 持久化处理
+     */
+    public static class RepairNetworkInterceptor implements Interceptor {
+        //        private   String TAG = NetworkInterceptor.class.getSimpleName();
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+
+            Log.i("registrationID", registrationID);
+            Request requestOrigin = chain.request();
+
+            //            获取set——cookie值
+            //            Response originalResponse = chain.proceed(requestOrigin);
+
+            Headers headersOrigin = requestOrigin.headers();
+            Headers headers = headersOrigin.newBuilder()
+                    .set("sessionid", mrepairsessionid)
+                    .set("deviceid", registrationID)
+                    .set("account", App.getUser().getAccount())
+                    .set("passwd", App.getUser().getPasswd())
+                    .set("Content-Type", "application/x-www-form-urlencoded")
+                    .set("user-agent", "mobile_app_android")
+                    .set("type", "finme")
+                    //   测试账号密码
+                    .build();
+            Request request = requestOrigin.newBuilder().headers(headers).build();
+            response = chain.proceed(request);
+            if (!response.headers("sessionid").isEmpty() && mrepairsessionid.equals("")) {
+                List<String> sessionidlist = response.headers("sessionid");
+                if (sessionidlist != null && sessionidlist.size() > 0) {
+                    mrepairsessionid = sessionidlist.get(0);
+                }
+
+            }
+
+
+            return response;
+        }
+    }
+
+    public class AddCookiesInterceptor implements Interceptor {
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request.Builder builder = chain.request().newBuilder();
+            HashSet<String> preferences = new HashSet<>();
+            for (String cookie : preferences) {
+                builder.addHeader("Cookie", cookie);
+                Log.v("OkHttp", "Adding Header: " + cookie); // This is done so I know which headers are being added; this interceptor is used after the normal logging of OkHttp
+            }
+
+            return chain.proceed(builder.build());
+        }
+    }
+
+    public class ReceivedCookiesInterceptor implements Interceptor {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Response originalResponse = chain.proceed(chain.request());
+
+            if (!originalResponse.headers("Set-Cookie").isEmpty()) {
+                HashSet<String> cookies = new HashSet<>();
+
+                for (String header : originalResponse.headers("Set-Cookie")) {
+                    cookies.add(header);
+                }
+
+            }
+
+            return originalResponse;
+        }
+    }
+
+    /**
+     * 包装OkHttpClient，用于下载文件的回调
+     *
+     * @param progressListener 进度回调接口
+     * @return 包装后的OkHttpClient
+     */
+    public static OkHttpClient addProgressResponseListener(final ProgressResponseListener progressListener) {
+        //增加拦截器
+        return okhttpClient.newBuilder().addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                //拦截
+                Response originalResponse = chain.proceed(chain.request());
+                //包装响应体并返回
+                return originalResponse.newBuilder()
+                        .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                        .build();
+            }
+        }).build();
+    }
+
+
+    /**
+     * 响应体进度回调接口 , 用于文件下载进度回调
+     */
+    public interface ProgressResponseListener {
+        void onResponseProgress(long bytesRead, long contentLength, boolean done);
+    }
+
+    /**
+     * 包装的响体，处理进度
+     */
+    static class ProgressResponseBody extends ResponseBody {
+        //实际的待包装响应体
+        private final ResponseBody             responseBody;
+        //进度回调接口
+        private final ProgressResponseListener progressListener;
+        //包装完成的BufferedSource
+        private       BufferedSource           bufferedSource;
+
+        /**
+         * 构造函数，赋值
+         *
+         * @param responseBody     待包装的响应体
+         * @param progressListener 回调接口
+         */
+        public ProgressResponseBody(ResponseBody responseBody, ProgressResponseListener progressListener) {
+            this.responseBody = responseBody;
+            this.progressListener = progressListener;
+        }
+
+
+        /**
+         * 重写调用实际的响应体的contentType
+         *
+         * @return MediaType
+         */
+        @Override
+        public MediaType contentType() {
+            return responseBody.contentType();
+        }
+
+        /**
+         * 重写调用实际的响应体的contentLength
+         *
+         * @return contentLength
+         * @throws IOException 异常
+         */
+        @Override
+        public long contentLength() {
+            return responseBody.contentLength();
+        }
+
+        /**
+         * 重写进行包装source
+         *
+         * @return BufferedSource
+         */
+        @Override
+        public BufferedSource source() {
+            if (bufferedSource == null) {
+                //包装
+                bufferedSource = Okio.buffer(source(responseBody.source()));
+            }
+            return bufferedSource;
+        }
+
+        /**
+         * 读取，回调进度接口
+         *
+         * @param source Source
+         * @return Source
+         */
+        private Source source(Source source) {
+
+            return new ForwardingSource(source) {
+                //当前读取字节数
+                long totalBytesRead = 0L;
+
+                @Override
+                public long read(Buffer sink, long byteCount) throws IOException {
+                    long bytesRead = super.read(sink, byteCount);
+                    //增加当前读取的字节数，如果读取完成了bytesRead会返回-1
+                    totalBytesRead += bytesRead != -1 ? bytesRead : 0;
+                    //回调，如果contentLength()不知道长度，会返回-1
+                    if (progressListener != null) {
+                        progressListener.onResponseProgress(totalBytesRead, responseBody.contentLength(), bytesRead == -1);
+                    }
+                    return bytesRead;
+                }
+            };
+        }
+    }
+
+
+    private static class JavaNetCookieJar implements CookieJar {
+        private final CookieHandler cookieHandler;
+
+        public JavaNetCookieJar(CookieHandler cookieHandler) {
+            this.cookieHandler = cookieHandler;
+        }
+
+        @Override
+        public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+            if (cookieHandler != null) {
+                List<String> cookieStrings = new ArrayList<>();
+                for (Cookie cookie : cookies) {
+                    cookieStrings.add(cookie.toString());
+                }
+                Map<String, List<String>> multimap = Collections.singletonMap("Set-Cookie", cookieStrings);
+                try {
+                    cookieHandler.put(url.uri(), multimap);
+                } catch (IOException e) {
+                }
+            }
+        }
+
+        @Override
+        public List<Cookie> loadForRequest(HttpUrl url) {
+            // The RI passes all headers. We don't have 'em, so we don't pass 'em!
+            Map<String, List<String>> headers = Collections.emptyMap();
+            Map<String, List<String>> cookieHeaders;
+            try {
+                cookieHeaders = cookieHandler.get(url.uri(), headers);
+            } catch (IOException e) {
+                return Collections.emptyList();
+            }
+
+            List<Cookie> cookies = null;
+            for (Map.Entry<String, List<String>> entry : cookieHeaders.entrySet()) {
+                String key = entry.getKey();
+                if (("Cookie".equalsIgnoreCase(key) || "Cookie2".equalsIgnoreCase(key))
+                        && !entry.getValue().isEmpty()) {
+                    for (String header : entry.getValue()) {
+                        if (cookies == null)
+                            cookies = new ArrayList<>();
+                        cookies.addAll(decodeHeaderAsJavaNetCookies(url, header));
+                    }
+                }
+            }
+
+            return cookies != null
+                    ? Collections.unmodifiableList(cookies)
+                    : Collections.<Cookie>emptyList();
+        }
+
+        /**
+         * Convert a request header to OkHttp's cookies via {@link -HttpCookie}. That extra step handles
+         * multiple cookies in a single request header, which {@link Cookie#parse} doesn't support.
+         */
+        private List<Cookie> decodeHeaderAsJavaNetCookies(HttpUrl url, String header) {
+            List<Cookie> result = new ArrayList<>();
+            for (int pos = 0, limit = header.length(), pairEnd; pos < limit; pos = pairEnd + 1) {
+                pairEnd = delimiterOffset(header, pos, limit, ";,");
+                int equalsSign = delimiterOffset(header, pos, pairEnd, '=');
+                String name = trimSubstring(header, pos, equalsSign);
+                if (name.startsWith("$"))
+                    continue;
+
+                // We have either name=value or just a name.
+                String value = equalsSign < pairEnd
+                        ? trimSubstring(header, equalsSign + 1, pairEnd)
+                        : "";
+
+                // If the value is "quoted", drop the quotes.
+                if (value.startsWith("\"") && value.endsWith("\"")) {
+                    value = value.substring(1, value.length() - 1);
+                }
+
+                result.add(new Cookie.Builder()
+                        .name(name)
+                        .value(value)
+                        .domain(url.host())
+                        .build());
+            }
+            return result;
+        }
+    }
+}

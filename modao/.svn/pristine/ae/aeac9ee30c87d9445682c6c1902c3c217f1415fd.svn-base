@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--可控制图片大小和位置的radiobutton-->
+    <declare-styleable name="PicControllableRadioButton">
+        <attr name="drawableSize" format="dimension" />
+        <attr name="drawableTop" format="reference" />
+        <attr name="drawableLeft" format="reference" />
+        <attr name="drawableRight" format="reference" />
+        <attr name="drawableBottom" format="reference" />
+    </declare-styleable>
+
+    <!--banner图-->
+    <declare-styleable name="ConvenientBanner">
+        <attr format="boolean" name="canLoop"/>
+    </declare-styleable>
+
+    <item name="cb_item_tag" type="id"/>
+
+    <!--waveview-->
+    <declare-styleable name="WaveView">
+        <attr name="outlineColor" format="color|reference" />
+        <attr name="patternScaleFactor" format="float"></attr>
+        <attr name="patternRes" format="reference"></attr>
+        <attr name="waveRes" format="reference"></attr>
+    </declare-styleable>
+
+    <!--下拉刷新框架-->
+    <declare-styleable name="XRefreshView">
+        <attr name="isHeightMatchParent" format="boolean" />
+        <attr name="isWidthMatchParent" format="boolean" />
+        <attr name="autoRefresh" format="boolean" />
+        <attr name="autoLoadMore" format="boolean" />
+    </declare-styleable>
+</resources>

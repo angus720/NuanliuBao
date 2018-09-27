@@ -1,0 +1,138 @@
+package nuanliu.com.modao.ui.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.bean.NoticeBean;
+import nuanliu.com.modao.widget.refreshview.recyclerview.BaseRecyclerAdapter;
+
+public class NoticeAdapter<T> extends BaseRecyclerAdapter<NoticeAdapter.ViewHolderNotice> {
+
+    private LayoutInflater mInflater;
+    private Context mContext;
+    private List<T> mDatas = new ArrayList<>();
+    private SimpleDateFormat simpleDateFormat;
+    /**
+     * 标记展开的item
+     */
+    private int opened = -1;
+
+    public NoticeAdapter(Context mContext) {
+        this.mContext = mContext;
+        mInflater = LayoutInflater.from(mContext);
+        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    }
+
+    public void addData(List<T> list) {
+        if (list != null && list.size() != 0) {
+            int startposition = mDatas.size();
+            mDatas.addAll(list);
+            notifyItemRangeInserted(startposition, mDatas.size());
+        }
+    }
+
+    public void clear() {
+        int size = mDatas.size();
+        if (size != 0) {
+            mDatas.clear();
+            notifyItemRangeRemoved(0, size);
+        }
+    }
+
+    @Override
+    public ViewHolderNotice getViewHolder(View view) {
+        return new ViewHolderNotice(view, false);
+    }
+
+    @Override
+    public ViewHolderNotice onCreateViewHolder(ViewGroup parent, int viewType, boolean isItem) {
+        View view = mInflater.inflate(R.layout.notice_list_item, parent, false);
+        return new ViewHolderNotice(view, true);
+    }
+
+    @Override
+    public void onBindViewHolder(NoticeAdapter.ViewHolderNotice holder, int position, boolean isItem) {
+        if (holder instanceof NoticeAdapter.ViewHolderNotice) {
+            final ViewHolderNotice viewHolderNotice = holder;
+            NoticeBean item = (NoticeBean) mDatas.get(position);
+            viewHolderNotice.bindView(position, item);
+        }
+    }
+
+    @Override
+    public int getAdapterItemCount() {
+        return mDatas.size();
+    }
+
+    class ViewHolderNotice extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.tv_notice_title)
+        TextView tvNoticeTitle;
+        @BindView(R.id.tv_notice_time)
+        TextView tvNoticeTime;
+        @BindView(R.id.tv_notice_content)
+        TextView tvNoticeContent;
+        @BindView(R.id.iv_go_detail)
+        ImageView ivGoDetail;
+        @BindView(R.id.ll_notice_content)
+        LinearLayout llNoticeContent;
+        @BindView(R.id.rl_go_detail)
+        RelativeLayout rlGoDetail;
+
+        public ViewHolderNotice(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        public ViewHolderNotice(View itemView, boolean isitem) {
+            super(itemView);
+            if (isitem) {
+                ButterKnife.bind(this, itemView);
+            }
+        }
+
+        private void bindView(int pos, NoticeBean noticeBean) {
+            tvNoticeTitle.setText(noticeBean.getTitle());
+            tvNoticeTime.setText(simpleDateFormat.format(new Date(noticeBean.getTime())));
+            tvNoticeContent.setText(noticeBean.getContent());
+
+            if (pos == opened){
+                llNoticeContent.setVisibility(View.VISIBLE);
+                ivGoDetail.setImageResource(R.mipmap.arrow_up);
+            } else{
+                llNoticeContent.setVisibility(View.GONE);
+                ivGoDetail.setImageResource(R.mipmap.arrow_down);
+            }
+        }
+
+        @OnClick(R.id.rl_go_detail)
+        public void onClick() {
+            if (opened == getAdapterPosition()) {
+                //当点击的item已经被展开了, 就关闭.
+                opened = -1;
+                notifyItemChanged(getAdapterPosition());
+            } else {
+                int oldOpened = opened;
+                opened = getAdapterPosition();
+                notifyItemChanged(oldOpened);
+                notifyItemChanged(opened);
+            }
+        }
+    }
+}

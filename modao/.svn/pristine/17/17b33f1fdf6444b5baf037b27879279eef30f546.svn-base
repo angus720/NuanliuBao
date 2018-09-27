@@ -1,0 +1,108 @@
+package nuanliu.com.modao.ui.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.widget.refreshview.recyclerview.BaseRecyclerAdapter;
+
+public class RepariOrderAdapter<T> extends BaseRecyclerAdapter<RepariOrderAdapter.ViewHolderOrder> {
+
+    private LayoutInflater mInflater;
+    private Context mContext;
+    private List<T> mDatas = new ArrayList<>();
+
+    public RepariOrderAdapter(Context mContext) {
+        this.mContext = mContext;
+        mInflater = LayoutInflater.from(mContext);
+    }
+
+    public void addData(List<T> list) {
+        if (list != null && list.size() != 0) {
+            int startposition = mDatas.size();
+            mDatas.addAll(list);
+            notifyItemRangeInserted(startposition, mDatas.size());
+        }
+    }
+
+    public void clear() {
+        int size = mDatas.size();
+        if (size != 0) {
+            mDatas.clear();
+            notifyItemRangeRemoved(0, size);
+        }
+    }
+
+    @Override
+    public ViewHolderOrder getViewHolder(View view) {
+        return new ViewHolderOrder(view, false);
+    }
+
+    @Override
+    public ViewHolderOrder onCreateViewHolder(ViewGroup parent, int viewType, boolean isItem) {
+        View view = mInflater.inflate(R.layout.repair_order_list_item, parent, false);
+        return new ViewHolderOrder(view, true);
+    }
+
+    @Override
+    public void onBindViewHolder(RepariOrderAdapter.ViewHolderOrder holder, int position, boolean isItem) {
+        if (holder instanceof RepariOrderAdapter.ViewHolderOrder) {
+            ViewHolderOrder viewHolderOrder = holder;
+
+        }
+    }
+
+    @Override
+    public int getAdapterItemCount() {
+        return mDatas.size();
+    }
+
+    class ViewHolderOrder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.tv_repair_address)
+        TextView tvRepairAddress;
+        @BindView(R.id.tv_type)
+        TextView tvType;
+        @BindView(R.id.tv_repair_reason)
+        TextView tvRepairReason;
+        @BindView(R.id.tv_repair_time)
+        TextView tvRepairTime;
+
+        public ViewHolderOrder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        public ViewHolderOrder(View itemView, boolean isitem) {
+            super(itemView);
+            if (isitem) {
+                ButterKnife.bind(this, itemView);
+            }
+        }
+
+        @OnClick({R.id.ll_order_item, R.id.iv_del_order, R.id.tv_view_order, R.id.tv_repair_status})
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.ll_order_item:
+                    break;
+                case R.id.iv_del_order:
+                    break;
+                case R.id.tv_view_order:
+                    break;
+                case R.id.tv_repair_status:
+                    break;
+            }
+        }
+    }
+
+}

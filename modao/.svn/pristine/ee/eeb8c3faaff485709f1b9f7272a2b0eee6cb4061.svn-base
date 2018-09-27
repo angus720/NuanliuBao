@@ -1,0 +1,28 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+
+/**
+ * 设备监测
+ */
+
+public class EquipmentMonitorActivity extends BaseActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_equipment_monitor;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("设备监测");
+    }
+}

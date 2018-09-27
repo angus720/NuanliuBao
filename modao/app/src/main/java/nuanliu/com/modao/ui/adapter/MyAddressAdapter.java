@@ -1,0 +1,186 @@
+package nuanliu.com.modao.ui.adapter;
+
+import android.content.Context;
+import android.content.Intent;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseResponse;
+import nuanliu.com.modao.bean.AddressItemBean;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.ui.activity.AddressEditActivity;
+import nuanliu.com.modao.ui.dialog.AppDialog;
+import nuanliu.com.modao.widget.refreshview.recyclerview.BaseRecyclerAdapter;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+public class MyAddressAdapter<T> extends BaseRecyclerAdapter<MyAddressAdapter.ViewHolderAddress> {
+
+    private LayoutInflater mInflater;
+    private Context mContext;
+    private List<T> mDatas = new ArrayList<>();
+    private ItemClickListener mItemClickListener;
+
+    public MyAddressAdapter(Context mContext) {
+        this.mContext = mContext;
+        mInflater = LayoutInflater.from(mContext);
+    }
+
+    public void addData(List<T> list) {
+        if (list != null && list.size() != 0) {
+            int startposition = mDatas.size();
+            mDatas.addAll(list);
+            notifyItemRangeInserted(startposition, mDatas.size());
+        }
+    }
+
+    public void clear() {
+        int size = mDatas.size();
+        if (size != 0) {
+            mDatas.clear();
+            notifyItemRangeRemoved(0, size);
+        }
+    }
+
+    @Override
+    public ViewHolderAddress getViewHolder(View view) {
+        return new ViewHolderAddress(view, false);
+    }
+
+    @Override
+    public ViewHolderAddress onCreateViewHolder(ViewGroup parent, int viewType, boolean isItem) {
+        View view = mInflater.inflate(R.layout.item_address_list, parent, false);
+        return new ViewHolderAddress(view, true);
+    }
+
+    @Override
+    public void onBindViewHolder(MyAddressAdapter.ViewHolderAddress holder, int position, boolean isItem) {
+        if (holder instanceof MyAddressAdapter.ViewHolderAddress) {
+            ViewHolderAddress viewHolderAddress = holder;
+            AddressItemBean item = (AddressItemBean) mDatas.get(position);
+            viewHolderAddress.tvUserName.setText(item.getContacts());
+            viewHolderAddress.tvUserPhone.setText(item.getTelphone());
+            viewHolderAddress.tvAddressDetail.setText(item.getProvice() + item.getCity() + item.getDistrict() + item.getDetailed());
+            //是否是默认地址 1：是 0：否
+            viewHolderAddress.tvDefaultAddress.setVisibility((item.getIsDefault() == 1) ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @Override
+    public int getAdapterItemCount() {
+        return mDatas.size();
+    }
+
+    class ViewHolderAddress extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.tv_user_name)
+        TextView tvUserName;
+        @BindView(R.id.tv_user_phone)
+        TextView tvUserPhone;
+        @BindView(R.id.tv_default_address)
+        TextView tvDefaultAddress;
+        @BindView(R.id.tv_address_detail)
+        TextView tvAddressDetail;
+
+        public ViewHolderAddress(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        public ViewHolderAddress(View itemView, boolean isitem) {
+            super(itemView);
+            if (isitem) {
+                ButterKnife.bind(this, itemView);
+            }
+        }
+
+        @OnClick({R.id.ll_address_item, R.id.ll_edit_address, R.id.ll_delete_address})
+        public void onClick(View view) {
+            final AddressItemBean bean = (AddressItemBean) mDatas.get(getLayoutPosition());
+            switch (view.getId()) {
+                case R.id.ll_address_item:
+                    if (null != mItemClickListener) {
+                        mItemClickListener.onItemClick(bean, getLayoutPosition());
+                    }
+                    break;
+                case R.id.ll_edit_address:
+                    Intent intent = new Intent(mContext, AddressEditActivity.class);
+                    intent.putExtra(Fields.ADDRESS_ITEM, bean);
+                    mContext.startActivity(intent);
+                    break;
+                case R.id.ll_delete_address:
+                    new AppDialog(mContext).builder()
+                            .setMsg("确定要删除地址吗？")
+                            .setNegativeButton("取消", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            })
+                            .setPositiveButton("确定", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    delAddress(bean.getId(), getLayoutPosition());
+                                }
+                            }).show();
+                    break;
+            }
+        }
+    }
+
+    public void delete(int position) {
+        mDatas.remove(position);
+        notifyItemRemoved(position);
+        if (position <= mDatas.size() - 1) {
+            notifyItemChanged(position);
+        }
+        notifyDataSetChanged();
+
+    }
+
+    private void delAddress(String id, final int position) {
+        ServiceFactory
+                .getApis()
+                .delAddress(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<BaseResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+                        if (baseResponse.getStatus() == 1) {
+                            delete(position);
+                        }
+                    }
+                });
+    }
+
+    public void setOnItemClickListener(ItemClickListener listener) {
+        this.mItemClickListener = listener;
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(AddressItemBean item, int positon);
+    }
+}

@@ -1,0 +1,76 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.view.View;
+
+import java.util.List;
+
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.bean.CouponBean;
+import nuanliu.com.modao.ui.dialog.AppDialog;
+import nuanliu.com.modao.ui.dialog.CouponDialog;
+import nuanliu.com.modao.utils.IntentUtils;
+
+/**
+ * 缴费详情
+ */
+
+public class PaymentDetailActivity extends BaseActivity {
+
+    private List<CouponBean> couponBeanList;
+    private CouponBean couponBean;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_payment_detail;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("缴费详情");
+    }
+
+    @OnClick({R.id.tll_pay_record, R.id.immediate_payment, R.id.trl_choose_coupon})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tll_pay_record:
+                IntentUtils.startActivity(this, PayRecordListActivity.class);
+                break;
+            case R.id.immediate_payment:
+                new AppDialog(this).builder()
+                        .setTitle(getResources().getString(R.string.warm_prompt))
+                        .setMsg(getResources().getString(R.string.prompt_message))
+                        .setNegativeButton("取消", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        }).setPositiveButton("确认", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }).show();
+                break;
+            case R.id.trl_choose_coupon:
+                if (null != couponBeanList && couponBeanList.size() > 0) {
+                    CouponDialog couponDialog = new CouponDialog(this,couponBeanList, couponBean.getCouponId());
+                    couponDialog.setCouponSelectListener(new CouponDialog.couponSelectListener() {
+                        @Override
+                        public void chooseCoupon(int pos) {
+                            couponBean = couponBeanList.get(pos);
+                        }
+                    });
+                    couponDialog.show();
+                }
+                break;
+        }
+    }
+}

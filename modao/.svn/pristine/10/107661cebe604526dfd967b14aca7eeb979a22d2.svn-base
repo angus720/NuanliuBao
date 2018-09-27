@@ -1,0 +1,28 @@
+package nuanliu.com.modao.bean;
+
+public class EquipmentBean extends Dto {
+
+    private String temperature;//温度
+    private String humidity;//湿度
+
+    public EquipmentBean(String temperature, String humidity) {
+        this.temperature = temperature;
+        this.humidity = humidity;
+    }
+
+    public String getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
+    }
+
+    public String getHumidity() {
+        return humidity;
+    }
+
+    public void setHumidity(String humidity) {
+        this.humidity = humidity;
+    }
+}

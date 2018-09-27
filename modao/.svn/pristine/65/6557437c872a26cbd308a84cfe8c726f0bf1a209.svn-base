@@ -1,0 +1,187 @@
+package nuanliu.com.modao.ui.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.lljjcoder.style.citylist.Toast.ToastUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.bean.MaintenanceOrderBean;
+import nuanliu.com.modao.ui.activity.OrderDetailActivity;
+import nuanliu.com.modao.ui.activity.RepairEvaluationActivity;
+import nuanliu.com.modao.ui.dialog.AppDialog;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.widget.refreshview.recyclerview.BaseRecyclerAdapter;
+
+public class RepariOrderAdapter<T> extends BaseRecyclerAdapter<RepariOrderAdapter.ViewHolderOrder> {
+
+    private LayoutInflater mInflater;
+    private Context mContext;
+    private List<T> mDatas = new ArrayList<>();
+
+    public RepariOrderAdapter(Context mContext) {
+        this.mContext = mContext;
+        mInflater = LayoutInflater.from(mContext);
+    }
+
+    public void addData(List<T> list) {
+        if (list != null && list.size() != 0) {
+            int startposition = mDatas.size();
+            mDatas.addAll(list);
+            notifyItemRangeInserted(startposition, mDatas.size());
+        }
+    }
+
+    public void clear() {
+        int size = mDatas.size();
+        if (size != 0) {
+            mDatas.clear();
+            notifyItemRangeRemoved(0, size);
+        }
+    }
+
+    @Override
+    public ViewHolderOrder getViewHolder(View view) {
+        return new ViewHolderOrder(view, false);
+    }
+
+    @Override
+    public ViewHolderOrder onCreateViewHolder(ViewGroup parent, int viewType, boolean isItem) {
+        View view = mInflater.inflate(R.layout.repair_order_list_item, parent, false);
+        return new ViewHolderOrder(view, true);
+    }
+
+    @Override
+    public void onBindViewHolder(RepariOrderAdapter.ViewHolderOrder holder, int position, boolean isItem) {
+        if (holder instanceof RepariOrderAdapter.ViewHolderOrder) {
+            ViewHolderOrder viewHolderOrder = holder;
+            MaintenanceOrderBean item = (MaintenanceOrderBean) mDatas.get(position);
+            viewHolderOrder.tvRepairAddress.setText(item.getAddress());
+            viewHolderOrder.tvRepairReason.setText(item.getRepairName());
+            viewHolderOrder.tvRepairTime.setText(item.getTime());
+            switch (item.getStatus()) {
+                case 0:
+                    viewHolderOrder.tvType.setText("待处理");
+                    viewHolderOrder.tvRepariStatus.setText("撤销报修");
+                    break;
+                case 1:
+                    viewHolderOrder.tvType.setText("处理中");
+                    break;
+                case 2:
+                    viewHolderOrder.tvType.setText("已完工");
+                    viewHolderOrder.tvType.setTextColor(mContext.getResources().getColor(R.color.charactertintgray));
+                    viewHolderOrder.ivDelOrder.setVisibility(View.VISIBLE);
+                    viewHolderOrder.tvRepariStatus.setText("待评价");
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public int getAdapterItemCount() {
+        return mDatas.size();
+    }
+
+    class ViewHolderOrder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.tv_repair_address)
+        TextView tvRepairAddress;
+        @BindView(R.id.tv_type)
+        TextView tvType;
+        @BindView(R.id.tv_repair_reason)
+        TextView tvRepairReason;
+        @BindView(R.id.tv_repair_time)
+        TextView tvRepairTime;
+        @BindView(R.id.iv_del_order)
+        ImageView ivDelOrder;
+        @BindView(R.id.tv_repair_status)
+        TextView tvRepariStatus;
+
+        public ViewHolderOrder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        public ViewHolderOrder(View itemView, boolean isitem) {
+            super(itemView);
+            if (isitem) {
+                ButterKnife.bind(this, itemView);
+            }
+        }
+
+        @OnClick({R.id.ll_order_item, R.id.iv_del_order, R.id.tv_view_order, R.id.tv_repair_status})
+        public void onClick(View view) {
+            final MaintenanceOrderBean bean = (MaintenanceOrderBean) mDatas.get(getLayoutPosition());
+            switch (view.getId()) {
+                case R.id.ll_order_item:
+                    break;
+                case R.id.iv_del_order:
+                    new AppDialog(mContext).builder()
+                            .setMsg("确定要删除该工单吗？")
+                            .setNegativeButton("取消", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            })
+                            .setPositiveButton("确定", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    ToastUtils.showLongToast(mContext, "删除");
+                                }
+                            }).show();
+                    break;
+                case R.id.tv_view_order:
+                    IntentUtils.startActivity(mContext, OrderDetailActivity.class);
+                    break;
+                case R.id.tv_repair_status:
+                    switch (bean.getStatus()) {
+                        case 0:
+                            new AppDialog(mContext).builder()
+                                    .setTitle("温馨提示")
+                                    .setMsg("报修单已形成，确认撤销工单？")
+                                    .setNegativeButton("取消", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+
+                                        }
+                                    })
+                                    .setPositiveButton("确定", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            ToastUtils.showLongToast(mContext, "撤销");
+                                        }
+                                    }).show();
+                            break;
+                        case 1:
+                            String text = tvRepariStatus.getText().toString();
+                            if (text.contains("完成维修")) {
+                                tvRepariStatus.setText("待评价");
+                                ivDelOrder.setVisibility(View.VISIBLE);
+                                tvType.setText("已完工");
+                                tvType.setTextColor(mContext.getResources().getColor(R.color.charactertintgray));
+                            } else if (text.contains("待评价")) {
+                                IntentUtils.startActivity(mContext, RepairEvaluationActivity.class);
+                            }
+                            break;
+                        case 2:
+                            IntentUtils.startActivity(mContext, RepairEvaluationActivity.class);
+                            break;
+                    }
+                    break;
+            }
+        }
+    }
+
+}

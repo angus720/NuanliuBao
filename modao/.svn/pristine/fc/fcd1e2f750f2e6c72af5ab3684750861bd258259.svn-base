@@ -1,0 +1,55 @@
+package nuanliu.com.modao.ui;
+
+import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.v7.widget.Toolbar;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import butterknife.BindView;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.widget.PicControllableRadioButton;
+import nuanliu.com.modao.widget.TouchLinearLayout;
+
+public class MainActivity extends BaseActivity {
+
+    @BindView(R.id.fl_maincontent)
+    FrameLayout flMaincontent;
+    @BindView(R.id.rb_1)
+    PicControllableRadioButton mRb1;
+    @BindView(R.id.rg_mainradiogroup)
+    RadioGroup rgMainradiogroup;
+    @BindView(R.id.title)
+    TextView mTitle;
+    @BindView(R.id.rb_2)
+    PicControllableRadioButton mRb2;
+    @BindView(R.id.rb_3)
+    PicControllableRadioButton mRb3;
+    @BindView(R.id.activity_main)
+    LinearLayout mActivityMain;
+    @BindView(R.id.rl_title)
+    RelativeLayout mRlTitle;
+    @BindView(R.id.projecname)
+    TextView mProjecname;
+    @BindView(R.id.tll_projectchange)
+    TouchLinearLayout mTllProjectchange;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.appBarLayout)
+    AppBarLayout mAppBarLayout;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
+}

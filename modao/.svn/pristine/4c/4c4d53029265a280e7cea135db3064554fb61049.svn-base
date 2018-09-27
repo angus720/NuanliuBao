@@ -1,0 +1,68 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.ui.adapter.CompanySelectAdapter;
+import nuanliu.com.modao.widget.indexlist.CustomEditText;
+import nuanliu.com.modao.widget.indexlist.SideBar;
+
+/**
+ * 选择公司
+ */
+
+public class ChooseCompanyActivity extends BaseActivity {
+
+    @BindView(R.id.et_custome)
+    CustomEditText etCustome;
+    @BindView(R.id.rv_company_select_Recyclerview)
+    RecyclerView rvCompanySelectRecyclerview;
+    @BindView(R.id.refreshlayout)
+    BGARefreshLayout refreshlayout;
+    @BindView(R.id.sidebar_right)
+    SideBar sidebarRight;
+    @BindView(R.id.tv_friend_dialog)
+    TextView tvFriendDialog;
+
+    private CompanySelectAdapter companySelectAdapter;
+    private List<String> mDatas = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initEvent();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_choose_company;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("选择公司");
+    }
+
+    private void initEvent() {
+        companySelectAdapter.setOnItemClickListener(new CompanySelectAdapter.ItemClickListener() {
+            @Override
+            public void onItemClick(String selectData, String companyId, int position) {
+                Intent intent = new Intent();
+                intent.putExtra(Fields.CHOOSE_COMPANY, selectData + "");
+                intent.putExtra(Fields.COMPANY_ID, companyId);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+    }
+}

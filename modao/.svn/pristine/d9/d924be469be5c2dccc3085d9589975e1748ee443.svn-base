@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:id="@+id/tv_heat_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="2017-2018年度"
+                android:textColor="@color/charactergray"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/tv_owe_amount"
+                android:paddingRight="10dp"
+                android:text="欠费金额:"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_owe_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="500.00"
+                android:textColor="@color/red"
+                android:textSize="16sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <View style="@style/view_line_gray" />
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="供热面积"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_heat_area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="100㎡"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="供热单价"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_heat_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="24元/㎡"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="采暖费"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_heat_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="1000.00"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="附加费"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_extra_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="0.00"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="已减免"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_cut_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="0.00"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="已优惠"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_discount_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="0.00"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="欠费天数"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_owe_days"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="90天"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="滞纳金"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_znj"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="0.00"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="10dp"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:text="上期结转"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_previous_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="0.00"
+                android:textColor="@color/charactergray"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+    </LinearLayout>
+
+    <View
+        style="@style/view_line_gray"
+        android:layout_height="10dp" />
+
+</LinearLayout>

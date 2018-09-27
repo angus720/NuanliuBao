@@ -1,0 +1,103 @@
+package nuanliu.com.modao.ui.adapter;
+
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.widget.refreshview.recyclerview.BaseRecyclerAdapter;
+
+public class RepairAddressAdapter<T> extends BaseRecyclerAdapter<RepairAddressAdapter.ViewHolderRepair> {
+
+    private LayoutInflater mInflater;
+    private Context mContext;
+    private List<T> mDatas = new ArrayList<>();
+    private ItemClickListener mItemClickListener;
+
+    public RepairAddressAdapter(Context mContext) {
+        this.mContext = mContext;
+        mInflater = LayoutInflater.from(mContext);
+    }
+
+    public void addData(List<T> list) {
+        if (list != null && list.size() != 0) {
+            int startposition = mDatas.size();
+            mDatas.addAll(list);
+            notifyItemRangeInserted(startposition, mDatas.size());
+        }
+    }
+
+    public void clear() {
+        int size = mDatas.size();
+        if (size != 0) {
+            mDatas.clear();
+            notifyItemRangeRemoved(0, size);
+        }
+    }
+
+    @Override
+    public ViewHolderRepair getViewHolder(View view) {
+        return new ViewHolderRepair(view, false);
+    }
+
+    @Override
+    public ViewHolderRepair onCreateViewHolder(ViewGroup parent, int viewType, boolean isItem) {
+        View view = mInflater.inflate(R.layout.item_repair_address, parent, false);
+        return new ViewHolderRepair(view, true);
+    }
+
+    @Override
+    public void onBindViewHolder(RepairAddressAdapter.ViewHolderRepair holder, int position, boolean isItem) {
+        if (holder instanceof RepairAddressAdapter.ViewHolderRepair) {
+            ViewHolderRepair viewHolderRecord = holder;
+        }
+    }
+
+    @Override
+    public int getAdapterItemCount() {
+        return mDatas.size();
+    }
+
+    class ViewHolderRepair extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.ll_repair_addr_item)
+        LinearLayout llRepairAddrItem;
+        @BindView(R.id.tv_repair_addr)
+        TextView tvRepairAddr;
+
+        public ViewHolderRepair(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        public ViewHolderRepair(View itemView, boolean isitem) {
+            super(itemView);
+            if (isitem) {
+                ButterKnife.bind(this, itemView);
+            }
+        }
+
+        @OnClick(R.id.ll_repair_addr_item)
+        public void onClick() {
+
+        }
+    }
+
+    public void setOnItemClickListener(ItemClickListener listener) {
+        this.mItemClickListener = listener;
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(String selectdata);
+    }
+}

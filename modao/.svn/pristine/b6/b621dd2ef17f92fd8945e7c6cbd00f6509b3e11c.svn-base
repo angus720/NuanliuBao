@@ -1,0 +1,171 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bigkoo.pickerview.builder.TimePickerBuilder;
+import com.bigkoo.pickerview.listener.OnTimeSelectListener;
+import com.bigkoo.pickerview.view.TimePickerView;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.utils.PopupwindowUtils;
+import nuanliu.com.modao.widget.TouchTextView;
+
+/**
+ * 报修单
+ */
+
+public class NewOrderActivity extends BaseActivity {
+
+    @BindView(R.id.tv_order_content)
+    TextView tvOrderContent;
+    @BindView(R.id.et_note)
+    EditText etNote;
+    @BindView(R.id.et_contact)
+    EditText etContact;
+    @BindView(R.id.et_phone)
+    EditText etPhone;
+    @BindView(R.id.iv_choose_man)
+    ImageView ivMan;
+    @BindView(R.id.iv_choose_women)
+    ImageView ivWomen;
+    @BindView(R.id.tv_appoint_time)
+    TextView tvAppointTime;
+
+    private PopupWindow mPopupWindow;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_new_order;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("报修单");
+    }
+
+    @OnClick({R.id.trl_choose_content, R.id.gender_man, R.id.gender_women, R.id.trl_add_address, R.id.trl_appointment_time, R.id.btn_confirm_submit})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.trl_choose_content:
+                initPopupWindow();
+                break;
+            case R.id.gender_man:
+                changeImage(ivMan, ivWomen);
+                break;
+            case R.id.gender_women:
+                changeImage(ivWomen, ivMan);
+                break;
+            case R.id.trl_add_address:
+                IntentUtils.startActivity(this, RepairAddressActivity.class);
+                break;
+            case R.id.trl_appointment_time:
+                showTime();
+                break;
+            case R.id.btn_confirm_submit:
+                break;
+        }
+    }
+
+    private void initPopupWindow() {
+        if (null == mPopupWindow) {
+            mPopupWindow = PopupwindowUtils.initPopupWindow(this, R.layout.popup_order_reason_select, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            mPopupWindow.setOutsideTouchable(true);
+            mPopupWindow.setFocusable(true);
+            mPopupWindow.setBackgroundDrawable(new BitmapDrawable());
+            TouchTextView reason1 = (TouchTextView) mPopupWindow.getContentView().findViewById(R.id.tv_reason1);
+            TouchTextView reason2 = (TouchTextView) mPopupWindow.getContentView().findViewById(R.id.tv_reason2);
+            TouchTextView reason3 = (TouchTextView) mPopupWindow.getContentView().findViewById(R.id.tv_reason3);
+            ItemClickListener clickListener = new ItemClickListener();
+            reason1.setOnClickListener(clickListener);
+            reason2.setOnClickListener(clickListener);
+            reason3.setOnClickListener(clickListener);
+            PopupwindowUtils.showAsDropDown(tvOrderContent, mPopupWindow);
+        } else {
+            PopupwindowUtils.showAsDropDown(tvOrderContent, mPopupWindow);
+        }
+    }
+
+    public class ItemClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.tv_reason1:
+                    tvOrderContent.setText("暖气不热");
+                    break;
+                case R.id.tv_reason2:
+                    tvOrderContent.setText("漏水");
+                    break;
+                case R.id.tv_reason3:
+                    tvOrderContent.setText("漏电");
+                    break;
+            }
+            mPopupWindow.dismiss();
+        }
+    }
+
+    private void showTime() {
+        Calendar selectedDate = Calendar.getInstance();
+        Calendar startDate = Calendar.getInstance();
+        startDate.set(2018, 1, 1);//设置起始年份
+        Calendar endDate = Calendar.getInstance();
+        endDate.set(2030, 1, 1);//设置结束年份
+        TimePickerView pvTime = new TimePickerBuilder(this, new OnTimeSelectListener() {
+            @Override
+            public void onTimeSelect(Date date, View v) {
+                String format = simpleDateFormat.format(date);
+                if (date.getTime() >= new Date().getTime()) {
+                    tvAppointTime.setText(format);
+                } else {
+                    Toast.makeText(NewOrderActivity.this, "请重新设置时间", Toast.LENGTH_SHORT).show();
+                }
+            }
+        })
+                .setCancelText("取消")//取消按钮文字
+                .setSubmitText("确定")//确认按钮文字
+                .setContentTextSize(18)//滚轮文字大小
+                .setTitleSize(20)//标题文字大小
+                .setTitleText("选择时间")//标题文字
+                .setOutSideCancelable(true)//点击屏幕，点在控件外部范围时，是否取消显示
+                .isCyclic(true)//是否循环滚动
+                .setTitleColor(R.color.black)//标题文字颜色
+                .setSubmitColor(R.color.black)//确定按钮文字颜色
+                .setCancelColor(R.color.black)//取消按钮文字颜色
+//                .setTitleBgColor(R.color.white)//标题背景颜色 Night mode
+//                .setBgColor(R.color.white)//滚轮背景颜色 Night mode
+//                .setRange(calendar.get(Calendar.YEAR) - 20, calendar.get(Calendar.YEAR) + 20)//默认是1900-2100年
+                .setDate(selectedDate)// 如果不设置的话，默认是系统时间*/
+                .setRangDate(startDate, endDate)//起始终止年月日设定
+//                .setLabel("年", "月", "日", "时", "分", "秒")
+                .isCenterLabel(false) //是否只显示中间选中项的label文字，false则每项item全部都带有label。
+                .build();
+        pvTime.show();
+    }
+
+    private void changeImage(ImageView iv1, ImageView iv2) {
+        iv1.setImageResource(R.mipmap.pay_choose);
+        iv2.setImageResource(R.mipmap.pay_unchoose);
+    }
+}

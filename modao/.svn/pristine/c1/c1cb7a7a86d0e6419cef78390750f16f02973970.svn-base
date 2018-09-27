@@ -1,0 +1,28 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+
+/**
+ * 设备报修
+ */
+
+public class TroubleRepairActivity extends BaseActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_trouble_repair;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("故障报修");
+    }
+}

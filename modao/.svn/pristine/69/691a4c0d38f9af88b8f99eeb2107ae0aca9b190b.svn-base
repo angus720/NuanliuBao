@@ -1,0 +1,365 @@
+package nuanliu.com.modao.widget;
+
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+
+import java.math.BigDecimal;
+
+import nuanliu.com.modao.R;
+
+/**
+ * Author Created by zhongtao
+ * Date on 2018/7/16.
+ */
+public class TempView extends View {
+
+    /**
+     * 控件宽
+     */
+    private int width;
+    /**
+     * 控件高
+     */
+    private int height;
+    /**
+     * 刻度笔
+     */
+    private Paint scalePaint;
+    /**
+     * 文字笔
+     */
+    private Paint textPaint;
+    /**
+     * 刻度长度
+     */
+    private int scalWidth = dip2px(12);
+    /**
+     * 小刻度长度
+     */
+    private int space = dip2px(5);
+    /**
+     * 默认刻度值
+     */
+    private String scaleValue = "10";
+    /**
+     * 内圈刻度笔
+     */
+    private Paint scaleFlagPaint;
+    /**
+     * 刻度标识
+     */
+    private String[] texts = new String[]{"10", "30", "50"};
+    private Rect rect3;
+    /**
+     * 当前刻度
+     */
+    private float currentScale;
+    /**
+     * 动画
+     */
+    private ValueAnimator valueAnimator;
+
+    public TempView(Context context) {
+        super(context);
+    }
+
+    public TempView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        initPaint();
+    }
+
+    private void initPaint() {
+        scalePaint = new Paint();
+        scalePaint.setColor(getResources().getColor(R.color.scaleColor));
+        scalePaint.setAntiAlias(true);
+        scalePaint.setStrokeWidth(4.0f);
+        scalePaint.setStyle(Paint.Style.FILL);
+
+        scaleFlagPaint = new Paint();
+        scaleFlagPaint.setColor(getResources().getColor(R.color.scaleColor));
+        scaleFlagPaint.setAntiAlias(true);
+        scaleFlagPaint.setStrokeWidth(5.0f);
+        scaleFlagPaint.setStyle(Paint.Style.FILL);
+
+        textPaint = new Paint();
+        textPaint.setColor(getResources().getColor(R.color.black));
+        textPaint.setAntiAlias(true);
+        textPaint.setStrokeWidth(1.0f);
+        textPaint.setStyle(Paint.Style.FILL);
+    }
+
+    public TempView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int wSize = MeasureSpec.getSize(widthMeasureSpec);
+        int wMode = MeasureSpec.getMode(widthMeasureSpec);
+        int hSize = MeasureSpec.getSize(heightMeasureSpec);
+        int hMode = MeasureSpec.getMode(heightMeasureSpec);
+
+        if (wMode == MeasureSpec.EXACTLY) {
+            width = wSize;
+        } else {
+            width = dip2px(476);
+        }
+        if (hMode == MeasureSpec.EXACTLY) {
+            height = hSize;
+        } else {
+            height = dip2px(417);
+        }
+        if (width != height) {
+            width = height;
+        }
+        /**
+         * 保存计算结果
+         */
+        setMeasuredDimension(width, height);
+
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        canvas.save();
+        canvas.translate(width / 2, height / 2);
+        /*canvas.drawLine(-width / 2, 0, width / 2, 0, textPaint);
+        canvas.drawLine(0, height / 2, 0, -height / 2, textPaint);*/
+        /*canvas.drawLine(-width/2+1, -height / 2+1, -width/2+1, height / 2-1, textPaint);
+        canvas.drawLine(width/2-1, -height / 2+1, width/2-1, height / 2-1, textPaint);*/
+        drawScale(canvas);
+        drawInScale(canvas);
+        drawScaleCenterText(canvas);
+        drawScaleText(canvas);
+        canvas.drawBitmap(createTextImage("已连接"), -createTextImage("已连接").getWidth() / 2, height / 4, scalePaint);
+        canvas.restore();
+
+    }
+
+
+    /**
+     * @param canvas 外圈刻度
+     */
+    private void drawScale(Canvas canvas) {
+        canvas.save();
+        canvas.rotate(-135);
+        for (int i = 1; i <= 72; i++) {
+
+            //canvas.drawLine(-width / 2, 0, -width / 2 + scalWidth, 0, scalePaint);
+            canvas.drawLine(0, -height / 2 + scalWidth, 0, -height / 2 + 2 * scalWidth, scalePaint);
+            if (i != 80) {
+                canvas.rotate(3.75f);
+            }
+
+        }
+        canvas.rotate(90);
+
+
+        for (int j = 0; j <= currentScale; j++) {
+            if (j < 9) {
+                scalePaint.setColor(Color.parseColor("#Fc7017"));
+            } else if (j >= 9 && j < 19) {
+                scalePaint.setColor(Color.parseColor("#F8b66a"));
+            } else {
+                scalePaint.setColor(Color.parseColor("#FBD786"));
+            }
+            canvas.drawLine(0, -height / 2 + scalWidth, 0, -height / 2 + 2 * scalWidth, scalePaint);
+            if (j == currentScale) {
+                scalePaint.setColor(Color.parseColor("#ef8200"));
+                canvas.drawLine(0, -height / 2, 0, -height / 2 + 2 * scalWidth, scalePaint);
+            }
+            if (j != currentScale) {
+                canvas.rotate(3.75f);
+            }
+        }
+        canvas.restore();
+    }
+
+    /**
+     * @param canvas 内圈刻度
+     */
+    private void drawInScale(Canvas canvas) {
+        scalePaint.setColor(getResources().getColor(R.color.scaleColor));
+        canvas.save();
+        canvas.rotate(-135);
+        for (int i = 1; i <= 72; i++) {
+
+            //canvas.drawLine(-width / 2, 0, -width / 2 + scalWidth, 0, scalePaint);
+            canvas.drawLine(0, -height / 2 + 2 * scalWidth + space, 0, (float) (-height / 2 + 2 * scalWidth + 1.5 * space), scalePaint);
+
+            if (i == 13 || i == 37 || i == 61) {
+                canvas.drawLine(0, -height / 2 + 2 * scalWidth + space, 0, -height / 2 + 2 * scalWidth + 4 * space, scaleFlagPaint);
+            }
+            if (i != 80) {
+                canvas.rotate(3.75f);
+            }
+        }
+        canvas.restore();
+    }
+
+    /**
+     * 刻度值
+     *
+     * @param canvas
+     */
+    private void drawScaleText(Canvas canvas) {
+        canvas.save();
+        scalePaint.setTextSize(dip2px(12));
+        Rect rect5 = new Rect();
+        scalePaint.getTextBounds(texts[2], 0, texts[2].length(), rect5);
+        canvas.drawText(texts[0], -width / 2 + 2 * scalWidth + 4 * space + dip2px(10), rect5.height() / 3, scalePaint);
+        canvas.drawText(texts[1], -rect5.width() / 2, (-height / 2 + rect5.height()) + 2 * scalWidth + 4 * space + dip2px(10), scalePaint);
+        canvas.drawText(texts[2], (width / 2 - rect5.width()) - 2 * scalWidth - 4 * space - dip2px(10), rect5.height() / 3, scalePaint);
+
+      /*  canvas.drawText(texts[0], (float) (-1.5 * rect3.width()), rect5.height() / 2, scalePaint);
+        canvas.drawText(texts[1], -rect5.width() / 2, (float) (-1.5*rect3.width()), scalePaint);
+        canvas.drawText(texts[2], (float) ( 1.5 * rect3.width()), rect5.height() / 2, scalePaint);*/
+
+        canvas.restore();
+    }
+
+    /**
+     * 中心刻度值
+     *
+     * @param canvas
+     */
+    private void drawScaleCenterText(Canvas canvas) {
+        canvas.save();
+        //textPaint.setFakeBoldText(true);
+        textPaint.setTextSize(dip2px(35));
+        rect3 = new Rect();
+        String text = scaleValue + "";
+        textPaint.getTextBounds(text, 0, text.length(), rect3);
+        canvas.drawText(text, (float) (-rect3.width() / 1.5) + 15, 20, textPaint);
+
+        textPaint.setTextSize(dip2px(20));
+        Rect rect1 = new Rect();
+        String text1 = "℃";
+        textPaint.getTextBounds(text1, 0, text1.length(), rect1);
+        canvas.drawText(text1, rect3.width() / 3 + 15, -rect3.height() / 2 + rect1.height() / 2, textPaint);
+
+        scalePaint.setTextSize(dip2px(14));
+        Rect rect2 = new Rect();
+        String text2 = "室内温度";
+        scalePaint.getTextBounds(text2, 0, text2.length(), rect2);
+        canvas.drawText(text2, -rect2.width() / 2, rect3.height() + 20, scalePaint);
+
+        textPaint.setTextSize(dip2px(13));
+//        Rect rect4 = new Rect();
+//        String text3 = "温湿度检测仪";
+//        textPaint.getTextBounds(text3, 0, text3.length(), rect4);
+//        canvas.drawText(text3, -rect4.width() / 2, height / 2 - 10, textPaint);
+
+        canvas.restore();
+    }
+
+    /**
+     * 创建指定大小的包含文字的图片，背景为透明
+     *
+     * @param innerTxt 内容文字
+     * @return
+     */
+    public Bitmap createTextImage(String innerTxt) {
+        //若使背景为透明，必须设置为Bitmap.Config.ARGB_4444
+        Drawable drawable = getResources().getDrawable(R.drawable.tempview);
+        Bitmap bitmap = Bitmap.createBitmap(dip2px(80), dip2px(30), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+       /* RectF rectF = new RectF(0, 0, dip2px(70), dip2px(30));
+        scalePaint.setColor(getResources().getColor(R.color.orange1));
+        canvas.drawRoundRect(rectF, 5, 5, scalePaint);*/
+
+
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setAntiAlias(true);
+        paint.setTextSize(dip2px(12));
+
+
+        Rect rect = new Rect();
+        paint.getTextBounds(innerTxt, 0, innerTxt.length(), rect);
+        //计算得出文字的绘制起始x、y坐标
+        int posX = dip2px(80) / 2 - rect.width() / 2;
+        int posY = dip2px(30) / 2 + rect.height() / 3;
+
+        canvas.drawText(innerTxt, posX, posY, paint);
+
+        return bitmap;
+    }
+
+    /**
+     * 设置温度
+     *
+     * @param temp
+     */
+    public void setTemp(String temp) {
+        scaleValue = temp;
+    }
+
+    /**
+     * dip转px
+     *
+     * @param dipValue
+     * @return
+     */
+    private int dip2px(float dipValue) {
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int) (dipValue * scale + 0.5f);
+    }
+
+    /**
+     * 移动位图
+     * 距
+     */
+
+    public void startTranslate(String temp) {
+        scaleValue = temp;
+        BigDecimal bigDecimal = new BigDecimal(72);
+        BigDecimal bigDecimal1 = new BigDecimal(60);
+        final int sum = (int) (Double.parseDouble(scaleValue) * (bigDecimal.divide(bigDecimal1, 2, BigDecimal.ROUND_HALF_UP).doubleValue()));
+        // 使用ValueAnimator创建一个过程
+        valueAnimator = ValueAnimator.ofFloat(0, 1);
+        valueAnimator.setDuration(1000);
+        valueAnimator.setInterpolator(new AccelerateInterpolator());
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                float fraction = (Float) animator.getAnimatedValue();
+                currentScale = sum * fraction;
+
+                // 重绘
+                invalidate();
+            }
+
+        });
+        valueAnimator.start();
+    }
+
+    public void cancle() {
+        valueAnimator.cancel();
+        scaleFlagPaint.reset();
+        scalePaint.reset();
+        textPaint.reset();
+        clearAnimation();
+    }
+}

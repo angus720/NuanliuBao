@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_bg"
+    android:orientation="vertical"
+    tools:context=".ui.activity.AddressBindActivity">
+
+    <include layout="@layout/head_toolbar_bind" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:text="供热公司名称"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:id="@+id/trl_choose_company"
+            android:layout_width="match_parent"
+            android:layout_height="84px"
+            android:layout_margin="8dp"
+            android:background="@drawable/edit_text_bg"
+            android:clickable="true"
+            app:gTouchEffect="ripple">
+
+            <TextView
+                android:id="@+id/tv_company_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/iv_choose_company"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:src="@mipmap/choose_triangle" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="业主姓名"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <nuanliu.com.modao.widget.TouchRelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="84px"
+            android:layout_margin="8dp"
+            android:background="@drawable/edit_text_bg"
+            app:gTouchEffect="ripple">
+
+            <EditText
+                android:id="@+id/et_owner_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="4dp"
+                android:background="@null"
+                android:hint="请填写您在热力公司登记的名字"
+                android:textSize="14sp" />
+
+        </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="用户卡号"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="84px"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+
+            <nuanliu.com.modao.widget.TouchRelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="84px"
+                android:layout_weight="2"
+                android:background="@drawable/edit_text_bg"
+                app:gTouchEffect="ripple">
+
+                <EditText
+                    android:id="@+id/et_owner_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="4dp"
+                    android:background="@null"
+                    android:hint="16位用户卡号"
+                    android:textSize="14sp" />
+
+            </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+            <nuanliu.com.modao.widget.TouchTextView
+                android:id="@+id/tv_find_number"
+                android:layout_width="0dp"
+                android:layout_height="84px"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/edit_text_bg"
+                android:gravity="center"
+                android:text="新卡号查询"
+                android:textColor="@color/characterblue"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <!--<nuanliu.com.modao.widget.TouchRelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:gTouchEffect="ripple">-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/tv_find_number"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:paddingRight="10dp"-->
+        <!--android:text="从哪里找到用户卡号?"-->
+        <!--android:textColor="@color/characterblue"-->
+        <!--android:textSize="15sp" />-->
+
+        <!--</nuanliu.com.modao.widget.TouchRelativeLayout>-->
+
+        <View
+            style="@style/view_line_gray"
+            android:layout_height="10dp"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="12dp"
+            android:text="温馨提示："
+            android:textColor="@color/charactertintgray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="5dp"
+            android:lineSpacingExtra="5dp"
+            android:text="@string/bind_tip"
+            android:textColor="@color/charactertintgray" />
+
+        <Button
+            android:id="@+id/btn_address_bind"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginTop="30dp"
+            android:background="@color/orange"
+            android:text="绑定地址"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</LinearLayout>

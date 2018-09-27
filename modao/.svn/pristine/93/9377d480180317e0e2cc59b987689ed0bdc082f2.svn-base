@@ -1,0 +1,9 @@
+package nuanliu.com.modao.constant;
+
+public class Fields {
+
+    //选择供热公司
+    public static final String CHOOSE_COMPANY = "choose_company";
+    //供热公司id
+    public static final String COMPANY_ID = "company_id";
+}

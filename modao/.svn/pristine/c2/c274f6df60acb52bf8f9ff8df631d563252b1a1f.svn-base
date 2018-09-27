@@ -1,0 +1,16 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+
+import nuanliu.com.modao.R;
+
+public class LoginActivity extends RxAppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+    }
+}

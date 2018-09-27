@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/gray" />
+
+        <nuanliu.com.modao.widget.TouchTextView
+            android:id="@+id/tv_enterprise"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/shape_rectangular_top2_5dp_bgwhite"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="企业"
+            android:textColor="@color/characterdarkgray"
+            android:textSize="14sp"
+            app:gTouchEffect="ripple" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/gray" />
+
+        <nuanliu.com.modao.widget.TouchTextView
+            android:id="@+id/tv_government_institution"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/shape_rectangular_normal"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="机关事业单位"
+            android:textColor="@color/characterdarkgray"
+            android:textSize="14sp"
+            app:gTouchEffect="ripple" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/gray" />
+
+        <nuanliu.com.modao.widget.TouchTextView
+            android:id="@+id/tv_personal"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/shape_rectangular_normal"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="个人"
+            android:textColor="@color/characterdarkgray"
+            android:textSize="14sp"
+            app:gTouchEffect="ripple" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/gray" />
+
+        <nuanliu.com.modao.widget.TouchTextView
+            android:id="@+id/tv_other"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/shape_rectangular_bottom2_5dp"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="其他"
+            android:textColor="@color/characterdarkgray"
+            android:textSize="14sp"
+            app:gTouchEffect="ripple" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/gray" />
+    </LinearLayout>
+
+</LinearLayout>

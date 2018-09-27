@@ -1,0 +1,338 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import com.classic.common.MultipleStatusView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.bean.RepairAddrItemBean;
+import nuanliu.com.modao.bean.RepairAddrListBean;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.ui.adapter.RepairAddressAdapter;
+import nuanliu.com.modao.ui.footer.RepairAddressFooter;
+import nuanliu.com.modao.utils.SpUtil;
+import nuanliu.com.modao.widget.TouchTextView;
+import nuanliu.com.modao.widget.refreshview.XRefreshView;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * 报修地址列表
+ */
+
+public class RepairAddressActivity extends BaseActivity implements XRefreshView.XRefreshViewListener {
+
+    @BindView(R.id.rv_recyclerview)
+    RecyclerView mRvRecyclerview;
+    @BindView(R.id.content_view)
+    LinearLayout mContentView;
+    @BindView(R.id.multiplestatusview_all)
+    MultipleStatusView mMultiplestatusviewAll;
+    @BindView(R.id.xrefreshview)
+    XRefreshView mXrefreshview;
+    @BindView(R.id.go_pay_record)
+    TouchTextView tvAdd;
+
+    private List<RepairAddrItemBean> mDatas = new ArrayList<>();
+    private RepairAddressAdapter mAdapter;
+
+    private int mStartPage = 1;
+    private int mPagesize = 20;
+
+    private boolean menableLoadmore = false;
+
+    private boolean isFirst = true;
+
+    private int flag = 1;
+    private static final int REQUEST_ADD_ADDRESS = 101;
+    private String residentId;
+    private int state;
+
+    private final LinearLayout.LayoutParams mLayoutParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initData();
+        initEvent();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_repair_address;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("报修地址");
+        tvAdd.setText("添加");
+        mXrefreshview.setPinnedTime(1000);
+        mXrefreshview.setMoveForHorizontal(true);
+        mXrefreshview.setPullLoadEnable(true);
+        mXrefreshview.setAutoLoadMore(false);
+
+        mXrefreshview.enableReleaseToLoadMore(true);
+        mXrefreshview.enableRecyclerViewPullUp(true);
+        mXrefreshview.enablePullUpWhenLoadCompleted(true);
+        mXrefreshview.setXRefreshViewListener(this);
+
+        mAdapter = new RepairAddressAdapter(this);
+        mAdapter.setCustomLoadMoreView(new RepairAddressFooter(this));
+        mRvRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+        mRvRecyclerview.setAdapter(mAdapter);
+
+        DefaultItemAnimator animator = new DefaultItemAnimator();
+        //设置动画时间
+        animator.setAddDuration(300);
+        animator.setRemoveDuration(300);
+        mRvRecyclerview.setItemAnimator(animator);
+
+    }
+
+    private void initData() {
+        if (null != getIntent()) {
+            state = getIntent().getIntExtra("state", 0);
+        }
+
+        mMultiplestatusviewAll.setOnRetryClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getRepairList(SpUtil.getUser().getUsername(), mStartPage, mPagesize, true);
+            }
+        });
+        getRepairList(SpUtil.getUser().getUsername(), mStartPage, mPagesize, true);
+    }
+
+    private void initEvent() {
+        mAdapter.setOnItemClickListener(new RepairAddressAdapter.ItemClickListener() {
+            @Override
+            public void onItemClick(String address, String residentId, int position) {
+                if (state == 1) {
+                    Intent intent = new Intent();
+                    intent.putExtra(Fields.CHOOSE_ADDRESS, address);
+                    intent.putExtra(Fields.RESIDENT_ID, residentId);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+            }
+        });
+    }
+
+    private void getRepairList(String userName, int startPage, int pageSize, final boolean isrefresh) {
+        showLoading("加载中");
+        mMultiplestatusviewAll.showContent();
+        ServiceFactory
+                .getApis()
+                .getRepairList(userName, startPage, pageSize)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<RepairAddrListBean>bindToLifecycle())
+                .subscribe(new Subscriber<RepairAddrListBean>() {
+                    @Override
+                    public void onCompleted() {
+                        dismissLoading();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        dismissLoading();
+                    }
+
+                    @Override
+                    public void onNext(RepairAddrListBean repairAddrResponse) {
+                        if (repairAddrResponse.getStatus() == 1) {
+                            refreshViewByData(repairAddrResponse.getBody().getList(), isrefresh);
+                        } else {
+//                            mMultiplestatusviewAll.showEmpty();
+                            emptyView();
+                        }
+                    }
+                });
+    }
+
+    private void bdRepairAddr(String username, String residentId, final boolean isrefresh) {
+        ServiceFactory
+                .getApis()
+                .bdRepairAddr(username, residentId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<RepairAddrListBean>bindToLifecycle())
+                .subscribe(new Subscriber<RepairAddrListBean>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(RepairAddrListBean repairAddrListBean) {
+                        if (repairAddrListBean.getStatus() == 1) {
+                            refreshViewByData(repairAddrListBean.getBody().getList(), isrefresh);
+                            Toast.makeText(RepairAddressActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (repairAddrListBean.getStatus_name().contains("房屋已绑定")) {
+                                Toast.makeText(RepairAddressActivity.this, "房屋已绑定", Toast.LENGTH_SHORT).show();
+                            } else if (repairAddrListBean.getStatus_name().contains("用户不存在")) {
+                                Toast.makeText(RepairAddressActivity.this, "用户不存在", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void refreshViewByData(List<RepairAddrListBean.BodyBean.ListBean> list, boolean isrefresh) {
+        mDatas.clear();
+        if (list == null || list.size() == 0) {
+
+            mXrefreshview.setLoadComplete(true);
+
+            if (isrefresh) {
+//                mMultiplestatusviewAll.showEmpty();
+                emptyView();
+            }
+
+            return;
+        }
+        //判断是否可以加载更多处理
+        if (list.size() < mPagesize) {
+            menableLoadmore = false;
+        } else {
+            menableLoadmore = true;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            RepairAddrListBean.BodyBean.ListBean datasBean = list.get(i);
+            mDatas.add(new RepairAddrItemBean(datasBean.getDistrictName(), datasBean.getCommunityName(), datasBean.getBuildingNumber(), datasBean.getUnitNumber(),
+                    datasBean.getHouseNumber(), datasBean.getAddress(), datasBean.getResidentid()));
+        }
+        if (isrefresh) {
+            mAdapter.clear();
+            mAdapter.addData(mDatas);
+            mAdapter.notifyDataSetChanged();
+        } else {
+
+            mAdapter.addData(mDatas);
+            mAdapter.notifyDataSetChanged();
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    if (menableLoadmore) {
+
+                        mXrefreshview.stopLoadMore(true);
+
+                    } else {
+                        mXrefreshview.setLoadComplete(true);
+                    }
+                }
+            }, 500);
+
+        }
+    }
+
+    private void emptyView() {
+        View emptyView = LayoutInflater.from(this).inflate(R.layout.normal_empty_view, null);
+        mMultiplestatusviewAll.showEmpty(emptyView, mLayoutParams);
+    }
+
+    @OnClick({R.id.tll_pay_record})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tll_pay_record:
+                Intent intent = new Intent(this, OnlinePaymentActivity.class);
+                intent.putExtra(Fields.FLAG, flag);
+                startActivityForResult(intent, REQUEST_ADD_ADDRESS);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_ADD_ADDRESS:
+                if (resultCode == RESULT_OK) {
+                    if (data.hasExtra(Fields.RESIDENT_ID)) {
+                        residentId = data.getStringExtra(Fields.RESIDENT_ID);
+                    }
+                    bdRepairAddr(SpUtil.getUser().getUsername(), residentId, true);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!isFirst) {
+            onRefresh(true);
+        }
+        isFirst = false;
+    }
+
+    @Override
+    public void onRefresh() {
+
+    }
+
+    @Override
+    public void onRefresh(boolean isPullDown) {
+        mXrefreshview.setLoadComplete(false);
+        menableLoadmore = true;
+        mStartPage = 1;
+        getRepairList(SpUtil.getUser().getUsername(), mStartPage, mPagesize, true);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mXrefreshview.stopRefresh();
+            }
+        }, 510);
+    }
+
+    @Override
+    public void onLoadMore(boolean isSilence) {
+        if (menableLoadmore) {
+            mStartPage++;
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    getRepairList(SpUtil.getUser().getUsername(), mStartPage, mPagesize, false);
+                }
+            }, 500);
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+//                    mXrefreshview.setLoadComplete(true);
+                }
+            }, 500);
+        }
+    }
+
+    @Override
+    public void onRelease(float direction) {
+
+    }
+
+    @Override
+    public void onHeaderMove(double headerMovePercent, int offsetY) {
+
+    }
+}

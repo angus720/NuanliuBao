@@ -1,0 +1,248 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.lljjcoder.Interface.OnCityItemClickListener;
+import com.lljjcoder.bean.CityBean;
+import com.lljjcoder.bean.DistrictBean;
+import com.lljjcoder.bean.ProvinceBean;
+import com.lljjcoder.citywheel.CityConfig;
+import com.lljjcoder.style.citypickerview.CityPickerView;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.base.BaseResponse;
+import nuanliu.com.modao.bean.AddressItemBean;
+import nuanliu.com.modao.constant.Fields;
+import nuanliu.com.modao.network.ServiceFactory;
+import nuanliu.com.modao.utils.IntentUtils;
+import nuanliu.com.modao.utils.SpUtil;
+import nuanliu.com.modao.widget.ClearEditText;
+import nuanliu.com.modao.widget.SwitchButton;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+/**
+ * 地址编辑、添加
+ */
+
+public class AddressEditActivity extends BaseActivity {
+
+    @BindView(R.id.go_pay_record)
+    TextView saveAddress;
+    @BindView(R.id.cet_user_name)
+    ClearEditText cetUserName;
+    @BindView(R.id.cet_user_phone)
+    ClearEditText cetUserPhone;
+    @BindView(R.id.tv_province_city)
+    TextView tvProvinceCity;
+    @BindView(R.id.cet_detail_address)
+    ClearEditText cetDetailAddress;
+    @BindView(R.id.default_address)
+    SwitchButton defaultAddress;
+
+    private AddressItemBean itemBean;
+    private boolean addressState = false;
+    private int isDefault;
+    private String contacts;
+    private String userPhone;
+    private String provinceName;
+    private String cityName;
+    private String districtName;
+    private String detailAddress;
+    private String username;
+    private String id;
+
+    private CityPickerView mPicker = new CityPickerView();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+        initData();
+        initEvent();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_address_edit;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("地址编辑");
+        saveAddress.setText("保存");
+        mPicker.init(this);
+    }
+
+    private void initData() {
+        Intent intent = getIntent();
+        if (null != intent) {
+            if (intent.hasExtra(Fields.ADDRESS_ITEM)) {
+                itemBean = (AddressItemBean) intent.getSerializableExtra(Fields.ADDRESS_ITEM);
+                username = itemBean.getCustomerUserid();
+                id = itemBean.getId();
+                contacts = itemBean.getContacts();
+                userPhone = itemBean.getTelphone();
+                provinceName = itemBean.getProvice();
+                cityName = itemBean.getCity();
+                districtName = itemBean.getDistrict();
+                detailAddress = itemBean.getDetailed();
+                isDefault = itemBean.getIsDefault();
+                if (isDefault == 1) {
+                    addressState = true;
+                }
+                defaultAddress.setChecked(addressState);
+            }
+        }
+
+        cetUserName.setText(contacts);
+        cetUserPhone.setText(userPhone);
+        if (null != provinceName && null != cityName && null != districtName) {
+            tvProvinceCity.setText(provinceName + " " + cityName + " " + districtName);
+        } else {
+            tvProvinceCity.setText("请选择省、市、区(县)");
+            tvProvinceCity.setTextColor(getResources().getColor(R.color.charactertintgray));
+        }
+        cetDetailAddress.setText(detailAddress);
+    }
+
+    private void initEvent() {
+        defaultAddress.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+                addressState = isChecked;
+            }
+        });
+    }
+
+    private void getData() {
+        username = SpUtil.getUser().getUsername();
+        contacts = cetUserName.getText().toString().trim();
+        userPhone = cetUserPhone.getText().toString().trim();
+        detailAddress = cetDetailAddress.getText().toString().trim();
+        if (addressState == true) {
+            isDefault = 1;
+        } else {
+            isDefault = 0;
+        }
+    }
+
+    @OnClick({R.id.tll_pay_record, R.id.trl_address_choose})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tll_pay_record:
+                getData();
+                editAddress(id, username, provinceName, cityName, districtName, detailAddress, contacts, userPhone, isDefault);
+                break;
+            case R.id.trl_address_choose:
+                //判断输入法的隐藏状态
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm.isActive()) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+
+                    selectAddress();//调用CityPicker选取区域
+                }
+        }
+    }
+
+    private void editAddress(String id, String username, String provice, String city, String district,
+                             String detailed, String contacts, String telphone, int isDefault) {
+        ServiceFactory
+                .getApis()
+                .editAddress(id, username, provice, city, district, detailed, contacts, telphone, isDefault)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<BaseResponse>bindToLifecycle())
+                .subscribe(new Subscriber<BaseResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+                        if (baseResponse.getStatus() == 1) {
+                            Toast.makeText(AddressEditActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                            IntentUtils.startActivity(AddressEditActivity.this, MyAddressActivity.class);
+                        }
+                    }
+                });
+    }
+
+    private void selectAddress() {
+        CityConfig cityConfig = new CityConfig.Builder().build();
+        mPicker.setConfig(cityConfig);
+        mPicker.setOnCityItemClickListener(new OnCityItemClickListener() {
+            @Override
+            public void onSelected(ProvinceBean province, CityBean city, DistrictBean district) {
+                if (null != province) {
+                    provinceName = province.getName();
+                }
+                if (null != city) {
+                    cityName = city.getName();
+                }
+                if (null != district) {
+                    districtName = district.getName();
+                }
+                tvProvinceCity.setText(provinceName.trim() + " " + cityName.trim() + " " + districtName.trim());
+                tvProvinceCity.setTextColor(getResources().getColor(R.color.black));
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(AddressEditActivity.this, "已取消", Toast.LENGTH_SHORT).show();
+            }
+        });
+        mPicker.showCityPicker();
+//        CityPicker cityPicker = new CityPicker.Builder(AddressEditActivity.this)
+//                .textSize(14)
+//                .title("地址选择")
+//                .titleBackgroundColor("#FFFFFF")
+//                .confirTextColor("#696969")
+//                .cancelTextColor("#696969")
+//                .province("安徽省")
+//                .city("合肥市")
+//                .district("高新区")
+//                .textColor(Color.parseColor("#000000"))
+//                .provinceCyclic(true)
+//                .cityCyclic(false)
+//                .districtCyclic(false)
+//                .visibleItemsCount(7)
+//                .itemPadding(10)
+//                .onlyShowProvinceAndCity(false)
+//                .build();
+//        cityPicker.show();
+//        //监听方法，获取选择结果
+//        cityPicker.setOnCityItemClickListener(new CityPicker.OnCityItemClickListener() {
+//            @Override
+//            public void onSelected(String... citySelected) {
+//                //省份
+//                province = citySelected[0];
+//                //城市
+//                city = citySelected[1];
+//                //区县（如果设定了两级联动，那么该项返回空）
+//                district = citySelected[2];
+//                //邮编
+//                String code = citySelected[3];
+//                //为TextView赋值
+//                tvProvinceCity.setText(province.trim() + " " + city.trim() + " " + district.trim());
+//                tvProvinceCity.setTextColor(getResources().getColor(R.color.black));
+//            }
+//        });
+    }
+}

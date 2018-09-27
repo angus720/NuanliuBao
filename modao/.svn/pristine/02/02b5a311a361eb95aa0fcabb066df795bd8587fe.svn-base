@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_bg"
+    android:orientation="vertical"
+    tools:context=".ui.activity.FindPasswordActivity">
+
+    <include layout="@layout/head_toolbar" />
+
+    <nuanliu.com.modao.widget.TouchRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/white"
+        app:gTouchEffect="ripple">
+
+        <ImageView
+            android:id="@+id/iv_phone_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/login_phone" />
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_user_phone"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/iv_phone_icon"
+            android:background="@null"
+            android:hint="请输入手机号"
+            android:paddingRight="5dp"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+    <View style="@style/view_line_gray" />
+
+    <nuanliu.com.modao.widget.TouchRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/white"
+        app:gTouchEffect="ripple">
+
+        <ImageView
+            android:id="@+id/iv_verify_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/register_vericode" />
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_verify_code"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/iv_verify_icon"
+            android:background="@null"
+            android:hint="请输入验证码"
+            android:paddingRight="5dp"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <!--<Button-->
+            <!--android:id="@+id/btn_get_verify_code"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginRight="5dp"-->
+            <!--android:background="@drawable/radio_button_select_bg"-->
+            <!--android:text="获取验证码"-->
+            <!--android:textColor="@color/white" />-->
+
+        <View
+            style="@style/view_line_h_gray"
+            android:layout_marginBottom="1dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="1dp"
+            android:layout_toLeftOf="@id/tv_get_verify_code" />
+
+        <TextView
+            android:id="@+id/tv_get_verify_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:text="获取验证码"
+            android:textColor="@color/orange"
+            android:textSize="15sp" />
+
+    </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+    <View style="@style/view_line_gray" />
+
+    <nuanliu.com.modao.widget.TouchRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/white"
+        app:gTouchEffect="ripple">
+
+        <ImageView
+            android:id="@+id/iv_password_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/login_pwd"/>
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_new_password"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/iv_password_icon"
+            android:background="@null"
+            android:hint="请输入新密码"
+            android:inputType="textPassword"
+            android:paddingRight="5dp"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+    <View style="@style/view_line_gray" />
+
+    <nuanliu.com.modao.widget.TouchRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/white"
+        app:gTouchEffect="ripple">
+
+        <ImageView
+            android:id="@+id/iv_confirm_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/login_pwd" />
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/iv_confirm_icon"
+            android:background="@null"
+            android:hint="请确认新密码"
+            android:inputType="textPassword"
+            android:paddingRight="5dp"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+    <View style="@style/view_line_gray" />
+
+    <Button
+        android:id="@+id/btn_complete"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/radio_button_select_bg"
+        android:text="确认"
+        android:textColor="@color/white" />
+
+</LinearLayout>

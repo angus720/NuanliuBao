@@ -1,0 +1,46 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.widget.TextView;
+
+import butterknife.BindView;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+import nuanliu.com.modao.widget.ClearEditText;
+import nuanliu.com.modao.widget.TouchRelativeLayout;
+
+/**
+ * 地址编辑
+ */
+
+public class AddressEditActivity extends BaseActivity {
+
+    @BindView(R.id.go_pay_record)
+    TextView saveAddress;
+    @BindView(R.id.cet_user_name)
+    ClearEditText cetUserName;
+    @BindView(R.id.cet_user_phone)
+    ClearEditText cetUserPhone;
+    @BindView(R.id.tv_user_address)
+    TextView tvUserAddress;
+    @BindView(R.id.trl_address_choose)
+    TouchRelativeLayout trlAddressChoose;
+    @BindView(R.id.cet_user_address)
+    ClearEditText cetUserAddress;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_address_edit;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("地址编辑");
+        saveAddress.setText("保存");
+    }
+}

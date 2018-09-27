@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="0.5dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_first_chart"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="A"
+        android:textColor="@color/orange"
+        android:textStyle="bold" />
+
+    <nuanliu.com.modao.widget.TouchTextView
+        android:id="@+id/tv_company_name"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:background="@color/white"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="北京暖流科技有限公司"
+        android:textColor="@color/characterdarkgray"
+        android:textSize="16sp"
+        app:gTouchEffect="ripple" />
+
+    <View style="@style/view_line_gray"/>
+
+</LinearLayout>

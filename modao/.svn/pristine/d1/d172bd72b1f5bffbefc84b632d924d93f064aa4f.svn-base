@@ -1,0 +1,55 @@
+package nuanliu.com.modao.bean;
+
+import android.support.annotation.NonNull;
+
+public class MaintenanceOrderBean implements Comparable<MaintenanceOrderBean> {
+
+    private int status;// 0[待处理] | 1[处理中] | 2[已完成]
+    private String repairReason;
+    private String address;
+    private String time;
+
+    public MaintenanceOrderBean(int status, String repairReason, String address, String time) {
+        this.status = status;
+        this.repairReason = repairReason;
+        this.address = address;
+        this.time = time;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getRepairReason() {
+        return repairReason;
+    }
+
+    public void setRepairReason(String repairReason) {
+        this.repairReason = repairReason;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    @Override
+    public int compareTo(@NonNull MaintenanceOrderBean o) {
+        return this.toString().compareTo(o.toString());
+    }
+}

@@ -1,0 +1,51 @@
+package nuanliu.com.modao.ui.activity;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import nuanliu.com.modao.R;
+import nuanliu.com.modao.base.BaseActivity;
+
+/**
+ * 个人信息
+ */
+
+public class UserInfoActivity extends BaseActivity {
+
+    @BindView(R.id.iv_user_pic)
+    ImageView ivUserPic;
+    @BindView(R.id.tv_user_name)
+    TextView tvUserName;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initView();
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_user_info;
+    }
+
+    private void initView() {
+        getToolBar().setTitle("个人信息");
+    }
+
+    @OnClick({R.id.trl_user_pic, R.id.trl_user_name})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.trl_user_pic:
+                break;
+            case R.id.trl_user_name:
+                Toast.makeText(this, "暂未开放", Toast.LENGTH_SHORT).show();
+//                IntentUtils.startActivity(this, ModifyUserNameActivity.class);
+                break;
+        }
+    }
+}

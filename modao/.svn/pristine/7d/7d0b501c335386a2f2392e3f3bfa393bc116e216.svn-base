@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.activity.ModifyPasswdActivity">
+
+    <include layout="@layout/head_toolbar" />
+
+    <nuanliu.com.modao.widget.TouchRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        app:gTouchEffect="ripple">
+
+        <ImageView
+            android:id="@+id/iv_old_passwd_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher" />
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_old_passwd"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:paddingRight="5dp"
+            android:layout_toRightOf="@id/iv_old_passwd_icon"
+            android:background="@null"
+            android:hint="请输入旧密码"
+            android:inputType="textPassword"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+    <View style="@style/view_line_gray" />
+
+    <nuanliu.com.modao.widget.TouchRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/white"
+        app:gTouchEffect="ripple">
+
+        <ImageView
+            android:id="@+id/iv_password_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher" />
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_new_password"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:paddingRight="5dp"
+            android:layout_toRightOf="@id/iv_password_icon"
+            android:background="@null"
+            android:hint="请输入新密码"
+            android:inputType="textPassword"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+    <View style="@style/view_line_gray" />
+
+    <nuanliu.com.modao.widget.TouchRelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/white"
+        app:gTouchEffect="ripple">
+
+        <ImageView
+            android:id="@+id/iv_confirm_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher" />
+
+        <nuanliu.com.modao.widget.ClearEditText
+            android:id="@+id/cet_confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:paddingRight="5dp"
+            android:layout_toRightOf="@id/iv_confirm_icon"
+            android:background="@null"
+            android:hint="请确认密码"
+            android:inputType="textPassword"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+    </nuanliu.com.modao.widget.TouchRelativeLayout>
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/radio_button_select_bg"
+        android:text="保存"
+        android:textColor="@color/white" />
+
+</LinearLayout>
